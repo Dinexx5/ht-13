@@ -18,5 +18,5 @@ export declare class BlogsController {
     updateBlog(inputModel: updateBlogModel, id: string, res: Response): Promise<Response<any, Record<string, any>>>;
     deleteBlog(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
     createPost(inputModel: createPostModel, blogId: string): Promise<postViewModel>;
-    getPosts(blogId: string, paginationQuery: any): Promise<paginatedViewModel<postViewModel[]>>;
+    getPosts(blogId: string, paginationQuery: any, res: Response): Promise<Response<any, Record<string, any>> | paginatedViewModel<postViewModel[]>>;
 }

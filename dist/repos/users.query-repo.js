@@ -18,10 +18,10 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 function mapDbUserToUserViewModel(user) {
     return {
+        id: user._id.toString(),
         login: user.login,
         email: user.email,
         createdAt: user.createdAt,
-        id: user._id.toString(),
     };
 }
 let UsersQueryRepository = class UsersQueryRepository {

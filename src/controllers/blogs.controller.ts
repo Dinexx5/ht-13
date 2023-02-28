@@ -84,7 +84,15 @@ export class BlogsController {
     return createdInstance;
   }
   @Get(':id/posts')
-  async getPosts(@Param('id') blogId: string, @Query() paginationQuery) {
+  async getPosts(
+    @Param('id') blogId: string,
+    @Query() paginationQuery,
+    @Res() res: Response,
+  ) {
+    const blog = await this.blogsQueryRepository.findBlogById(blogId);
+    if (!blog) {
+      return res.sendStatus(404);
+    }
     const returnedPosts: paginatedViewModel<postViewModel[]> =
       await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
     return returnedPosts;

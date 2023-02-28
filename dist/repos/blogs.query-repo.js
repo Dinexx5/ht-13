@@ -21,6 +21,7 @@ function mapFoundBlogToBlogViewModel(blog) {
         name: blog.name,
         description: blog.description,
         websiteUrl: blog.websiteUrl,
+        isMembership: blog.isMembership,
         createdAt: blog.createdAt,
         id: blog._id.toString(),
     };

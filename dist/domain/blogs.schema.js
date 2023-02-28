@@ -27,6 +27,10 @@ __decorate([
     __metadata("design:type", String)
 ], Blog.prototype, "description", void 0);
 __decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Boolean)
+], Blog.prototype, "isMembership", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
 ], Blog.prototype, "websiteUrl", void 0);
@@ -56,10 +60,11 @@ class updateBlogModel {
 }
 exports.updateBlogModel = updateBlogModel;
 class blogViewModel {
-    constructor(id, name, description, websiteUrl, createdAt) {
+    constructor(id, name, description, isMembership, websiteUrl, createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.isMembership = isMembership;
         this.websiteUrl = websiteUrl;
         this.createdAt = createdAt;
     }

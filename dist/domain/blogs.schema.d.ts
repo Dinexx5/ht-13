@@ -4,6 +4,7 @@ export declare class Blog {
     _id: mongoose.Schema.Types.ObjectId;
     name: string;
     description: string;
+    isMembership: boolean;
     websiteUrl: string;
     createdAt: string;
 }
@@ -24,7 +25,8 @@ export declare class blogViewModel {
     id: string;
     name: string;
     description: string;
+    isMembership: boolean;
     websiteUrl: string;
     createdAt: string;
-    constructor(id: string, name: string, description: string, websiteUrl: string, createdAt: string);
+    constructor(id: string, name: string, description: string, isMembership: boolean, websiteUrl: string, createdAt: string);
 }

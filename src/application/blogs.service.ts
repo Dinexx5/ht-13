@@ -22,6 +22,7 @@ export class BlogsService {
       _id: new mongoose.Types.ObjectId(),
       name: inputModel.name,
       description: inputModel.description,
+      isMembership: false,
       websiteUrl: inputModel.websiteUrl,
       createdAt: new Date().toISOString(),
     };
@@ -32,6 +33,7 @@ export class BlogsService {
       name: blogInstance.name,
       description: blogInstance.description,
       websiteUrl: blogInstance.websiteUrl,
+      isMembership: blogInstance.isMembership,
       createdAt: blogInstance.createdAt,
       id: blogInstance._id.toString(),
     };

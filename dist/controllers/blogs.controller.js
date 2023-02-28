@@ -61,7 +61,11 @@ let BlogsController = class BlogsController {
         const createdInstance = await this.postsService.createPost(postDto);
         return createdInstance;
     }
-    async getPosts(blogId, paginationQuery) {
+    async getPosts(blogId, paginationQuery, res) {
+        const blog = await this.blogsQueryRepository.findBlogById(blogId);
+        if (!blog) {
+            return res.sendStatus(404);
+        }
         const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
         return returnedPosts;
     }
@@ -117,8 +121,9 @@ __decorate([
     (0, common_1.Get)(':id/posts'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Query)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "getPosts", null);
 BlogsController = __decorate([

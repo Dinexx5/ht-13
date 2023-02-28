@@ -14,6 +14,9 @@ export class Blog {
   @Prop({ required: true })
   description: string;
 
+  @Prop()
+  isMembership: boolean;
+
   @Prop({ required: true })
   websiteUrl: string;
 
@@ -44,6 +47,7 @@ export class blogViewModel {
     public id: string,
     public name: string,
     public description: string,
+    public isMembership: boolean,
     public websiteUrl: string,
     public createdAt: string,
   ) {}
