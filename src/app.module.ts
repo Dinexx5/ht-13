@@ -21,6 +21,7 @@ import { UsersController } from './controllers/users.controller';
 import { UsersService } from './domain/users.service';
 import { UsersRepository } from './repos/users.repository';
 import { UsersQueryRepository } from './repos/users.query-repo';
+import { TestingController } from './controllers/testing.controller';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UsersQueryRepository } from './repos/users.query-repo';
     PostsController,
     CommentsController,
     UsersController,
+    TestingController,
   ],
   providers: [
     AppService,

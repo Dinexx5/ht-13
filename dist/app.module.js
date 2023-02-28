@@ -30,6 +30,7 @@ const users_controller_1 = require("./controllers/users.controller");
 const users_service_1 = require("./domain/users.service");
 const users_repository_1 = require("./repos/users.repository");
 const users_query_repo_1 = require("./repos/users.query-repo");
+const testing_controller_1 = require("./controllers/testing.controller");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -48,6 +49,7 @@ AppModule = __decorate([
             posts_controller_1.PostsController,
             comments_controller_1.CommentsController,
             users_controller_1.UsersController,
+            testing_controller_1.TestingController,
         ],
         providers: [
             app_service_1.AppService,
