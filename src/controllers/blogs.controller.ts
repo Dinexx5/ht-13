@@ -76,7 +76,12 @@ export class BlogsController {
   async createPost(
     @Body() inputModel: createPostModel,
     @Param('id') blogId: string,
+    @Res() res: Response,
   ) {
+    const blog = await this.blogsQueryRepository.findBlogById(blogId);
+    if (!blog) {
+      return res.sendStatus(404);
+    }
     const postDto = { ...inputModel, blogId };
     const createdInstance: postViewModel = await this.postsService.createPost(
       postDto,

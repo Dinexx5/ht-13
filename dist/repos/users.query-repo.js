@@ -34,15 +34,15 @@ let UsersQueryRepository = class UsersQueryRepository {
         const skippedUsersCount = (+pageNumber - 1) * +pageSize;
         const filter = {};
         if (searchLoginTerm && !searchEmailTerm) {
-            filter['accountData.login'] = { $regex: searchLoginTerm, $options: 'i' };
+            filter['login'] = { $regex: searchLoginTerm, $options: 'i' };
         }
         if (searchEmailTerm && !searchLoginTerm) {
-            filter['accountData.email'] = { $regex: searchEmailTerm, $options: 'i' };
+            filter['email'] = { $regex: searchEmailTerm, $options: 'i' };
         }
         if (searchLoginTerm && searchEmailTerm) {
             filter.$or = [
-                { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-                { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
+                { email: { $regex: searchEmailTerm, $options: 'i' } },
+                { login: { $regex: searchLoginTerm, $options: 'i' } },
             ];
         }
         const countAll = await this.userModel.countDocuments(filter);

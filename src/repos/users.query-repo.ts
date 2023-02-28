@@ -29,23 +29,23 @@ export class UsersQueryRepository {
     const skippedUsersCount = (+pageNumber - 1) * +pageSize;
 
     const filter = {} as {
-      'accountData.login'?: { $regex: string; $options: string };
-      'accountData.email'?: { $regex: string; $options: string };
+      login?: { $regex: string; $options: string };
+      email?: { $regex: string; $options: string };
       $or?: [
-        { 'accountData.email': { $regex: string; $options: string } },
-        { 'accountData.login': { $regex: string; $options: string } },
+        { email: { $regex: string; $options: string } },
+        { login: { $regex: string; $options: string } },
       ];
     };
     if (searchLoginTerm && !searchEmailTerm) {
-      filter['accountData.login'] = { $regex: searchLoginTerm, $options: 'i' };
+      filter['login'] = { $regex: searchLoginTerm, $options: 'i' };
     }
     if (searchEmailTerm && !searchLoginTerm) {
-      filter['accountData.email'] = { $regex: searchEmailTerm, $options: 'i' };
+      filter['email'] = { $regex: searchEmailTerm, $options: 'i' };
     }
     if (searchLoginTerm && searchEmailTerm) {
       filter.$or = [
-        { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-        { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
+        { email: { $regex: searchEmailTerm, $options: 'i' } },
+        { login: { $regex: searchLoginTerm, $options: 'i' } },
       ];
     }
 
