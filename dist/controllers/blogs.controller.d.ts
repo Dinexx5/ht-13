@@ -3,7 +3,7 @@ import { BlogsQueryRepository } from '../repos/blogs.query-repo';
 import { blogViewModel, createBlogModel, updateBlogModel } from '../domain/blogs.schema';
 import { paginatedViewModel } from '../models/pagination';
 import { Response } from 'express';
-import { createPostModel, postViewModel } from '../domain/posts.schema';
+import { createPostModel } from '../domain/posts.schema';
 import { PostsService } from '../application/posts.service';
 import { PostsQueryRepository } from '../repos/posts.query-repo';
 export declare class BlogsController {
@@ -17,6 +17,6 @@ export declare class BlogsController {
     createBlog(inputModel: createBlogModel): Promise<blogViewModel>;
     updateBlog(inputModel: updateBlogModel, id: string, res: Response): Promise<Response<any, Record<string, any>>>;
     deleteBlog(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
-    createPost(inputModel: createPostModel, blogId: string, res: Response): Promise<Response<any, Record<string, any>> | postViewModel>;
-    getPosts(blogId: string, paginationQuery: any, res: Response): Promise<Response<any, Record<string, any>> | paginatedViewModel<postViewModel[]>>;
+    createPost(inputModel: createPostModel, blogId: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    getPosts(blogId: string, paginationQuery: any, res: Response): Promise<Response<any, Record<string, any>>>;
 }

@@ -34,10 +34,10 @@ let UsersQueryRepository = class UsersQueryRepository {
         const skippedUsersCount = (+pageNumber - 1) * +pageSize;
         const filter = {};
         if (searchLoginTerm && !searchEmailTerm) {
-            filter['login'] = { $regex: searchLoginTerm, $options: 'i' };
+            filter.login = { $regex: searchLoginTerm, $options: 'i' };
         }
         if (searchEmailTerm && !searchLoginTerm) {
-            filter['email'] = { $regex: searchEmailTerm, $options: 'i' };
+            filter.email = { $regex: searchEmailTerm, $options: 'i' };
         }
         if (searchLoginTerm && searchEmailTerm) {
             filter.$or = [

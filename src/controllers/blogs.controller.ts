@@ -86,7 +86,7 @@ export class BlogsController {
     const createdInstance: postViewModel = await this.postsService.createPost(
       postDto,
     );
-    return createdInstance;
+    return res.send(createdInstance);
   }
   @Get(':id/posts')
   async getPosts(
@@ -100,6 +100,6 @@ export class BlogsController {
     }
     const returnedPosts: paginatedViewModel<postViewModel[]> =
       await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
-    return returnedPosts;
+    return res.send(returnedPosts);
   }
 }

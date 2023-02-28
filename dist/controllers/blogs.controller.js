@@ -63,7 +63,7 @@ let BlogsController = class BlogsController {
         }
         const postDto = Object.assign(Object.assign({}, inputModel), { blogId });
         const createdInstance = await this.postsService.createPost(postDto);
-        return createdInstance;
+        return res.send(createdInstance);
     }
     async getPosts(blogId, paginationQuery, res) {
         const blog = await this.blogsQueryRepository.findBlogById(blogId);
@@ -71,7 +71,7 @@ let BlogsController = class BlogsController {
             return res.sendStatus(404);
         }
         const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
-        return returnedPosts;
+        return res.send(returnedPosts);
     }
 };
 __decorate([
