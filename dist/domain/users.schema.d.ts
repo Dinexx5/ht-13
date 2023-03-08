@@ -1,17 +1,45 @@
 import mongoose, { HydratedDocument } from 'mongoose';
 export type UserDocument = HydratedDocument<User>;
-export declare class User {
-    _id: mongoose.Schema.Types.ObjectId;
+export declare class emailConfirmationSchema {
+    confirmationCode: string;
+    expirationDate: Date;
+    isConfirmed: boolean;
+    createdAt: string;
+}
+export declare class passwordRecoverySchema {
+    recoveryCode: string;
+    expirationDate: Date;
+}
+export declare class accountDataSchema {
     login: string;
     email: string;
     createdAt: string;
+    passwordHash: string;
+}
+export declare class User {
+    _id: mongoose.Schema.Types.ObjectId;
+    accountData: accountDataSchema;
+    emailConfirmation: emailConfirmationSchema;
+    passwordRecovery: passwordRecoverySchema;
 }
 export declare const UserSchema: mongoose.Schema<User, mongoose.Model<User, any, any, any, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, User>;
 export declare class createUserModel {
     login: string;
     email: string;
     password: string;
-    constructor(login: string, email: string, password: string);
+}
+export declare class resendEmailModel {
+    email: string;
+}
+export declare class confirmEmailModel {
+    code: string;
+}
+export declare class passwordRecoveryModel {
+    email: string;
+}
+export declare class newPasswordModel {
+    newPassword: string;
+    recoveryCode: string;
 }
 export declare class userViewModel {
     id: string;
@@ -19,4 +47,8 @@ export declare class userViewModel {
     email: string;
     createdAt: string;
     constructor(id: string, login: string, email: string, createdAt: string);
+}
+export declare class authModel {
+    loginOrEmail: string;
+    password: string;
 }

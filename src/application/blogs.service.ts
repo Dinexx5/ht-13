@@ -46,10 +46,7 @@ export class BlogsService {
     return true;
   }
 
-  async UpdateBlogById(
-    blogBody: updateBlogModel,
-    blogId: string,
-  ): Promise<boolean> {
+  async UpdateBlogById(blogBody: updateBlogModel, blogId: string): Promise<boolean> {
     const { name, description, websiteUrl } = blogBody;
     const _id = new mongoose.Types.ObjectId(blogId);
     const blogInstance = await this.blogsRepository.findBlogInstance(_id);

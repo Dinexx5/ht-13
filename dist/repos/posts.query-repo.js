@@ -38,7 +38,7 @@ let PostsQueryRepository = class PostsQueryRepository {
         this.postModel = postModel;
     }
     async getAllPosts(query, blogId) {
-        const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10, } = query;
+        const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
         const sortDirectionNumber = sortDirection === 'desc' ? -1 : 1;
         const skippedPostsNumber = (+pageNumber - 1) * +pageSize;
         const filter = {};

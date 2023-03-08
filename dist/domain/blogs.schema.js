@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogViewModel = exports.updateBlogModel = exports.createBlogModel = exports.BlogSchema = exports.Blog = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const class_validator_1 = require("class-validator");
 let Blog = class Blog {
 };
 __decorate([
@@ -44,20 +45,34 @@ Blog = __decorate([
 exports.Blog = Blog;
 exports.BlogSchema = mongoose_1.SchemaFactory.createForClass(Blog);
 class createBlogModel {
-    constructor(name, description, websiteUrl) {
-        this.name = name;
-        this.description = description;
-        this.websiteUrl = websiteUrl;
-    }
 }
+__decorate([
+    (0, class_validator_1.Length)(0, 15),
+    __metadata("design:type", String)
+], createBlogModel.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.Length)(0, 500),
+    __metadata("design:type", String)
+], createBlogModel.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsUrl)(),
+    __metadata("design:type", String)
+], createBlogModel.prototype, "websiteUrl", void 0);
 exports.createBlogModel = createBlogModel;
 class updateBlogModel {
-    constructor(name, description, websiteUrl) {
-        this.name = name;
-        this.description = description;
-        this.websiteUrl = websiteUrl;
-    }
 }
+__decorate([
+    (0, class_validator_1.Length)(0, 15),
+    __metadata("design:type", String)
+], updateBlogModel.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.Length)(0, 500),
+    __metadata("design:type", String)
+], updateBlogModel.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsUrl)(),
+    __metadata("design:type", String)
+], updateBlogModel.prototype, "websiteUrl", void 0);
 exports.updateBlogModel = updateBlogModel;
 class blogViewModel {
     constructor(id, name, description, isMembership, websiteUrl, createdAt) {

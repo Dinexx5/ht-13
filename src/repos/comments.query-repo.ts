@@ -1,10 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import {
-  Comment,
-  CommentDocument,
-  commentViewModel,
-} from '../domain/comments.schema';
+import { Comment, CommentDocument, commentViewModel } from '../domain/comments.schema';
 import { paginatedViewModel, paginationQuerys } from '../models/pagination';
 
 function mapperToCommentViewModel(comment: CommentDocument): commentViewModel {
@@ -25,19 +21,12 @@ function mapperToCommentViewModel(comment: CommentDocument): commentViewModel {
 }
 
 export class CommentsQueryRepository {
-  constructor(
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-  ) {}
+  constructor(@InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {}
   async getAllCommentsForPost(
     query: paginationQuerys,
     postId: string,
   ): Promise<paginatedViewModel<commentViewModel[]>> {
-    const {
-      sortDirection = 'desc',
-      sortBy = 'createdAt',
-      pageNumber = 1,
-      pageSize = 10,
-    } = query;
+    const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
 
     const sortDirectionNumber: 1 | -1 = sortDirection === 'desc' ? -1 : 1;
     const skippedCommentsNumber = (+pageNumber - 1) * +pageSize;
@@ -62,8 +51,7 @@ export class CommentsQueryRepository {
 
   async findCommentById(commentId: string): Promise<commentViewModel | null> {
     const _id = new mongoose.Types.ObjectId(commentId);
-    const foundComment: CommentDocument | null =
-      await this.commentModel.findOne({ _id: _id });
+    const foundComment: CommentDocument | null = await this.commentModel.findOne({ _id: _id });
     if (!foundComment) {
       return null;
     }

@@ -27,12 +27,7 @@ export class PostsQueryRepository {
     query: paginationQuerys,
     blogId?: string,
   ): Promise<paginatedViewModel<postViewModel[]>> {
-    const {
-      sortDirection = 'desc',
-      sortBy = 'createdAt',
-      pageNumber = 1,
-      pageSize = 10,
-    } = query;
+    const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
 
     const sortDirectionNumber: 1 | -1 = sortDirection === 'desc' ? -1 : 1;
     const skippedPostsNumber = (+pageNumber - 1) * +pageSize;

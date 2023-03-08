@@ -17,14 +17,17 @@ import { CommentsController } from './controllers/comments.controller';
 import { CommentsQueryRepository } from './repos/comments.query-repo';
 import { Comment, CommentSchema } from './domain/comments.schema';
 import { User, UserSchema } from './domain/users.schema';
-import { UsersController } from './controllers/users.controller';
-import { UsersService } from './domain/users.service';
-import { UsersRepository } from './repos/users.repository';
-import { UsersQueryRepository } from './repos/users.query-repo';
 import { TestingController } from './controllers/testing.controller';
+import { UsersModule } from './users.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthController } from './controllers/auth.controller';
+import { CommentsRepository } from './repos/comments.repository';
+import { CommentsService } from './application/comments.service';
 
 @Module({
   imports: [
+    UsersModule,
+    AuthModule,
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URL),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
@@ -33,11 +36,11 @@ import { TestingController } from './controllers/testing.controller';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [
+    AuthController,
     AppController,
     BlogsController,
     PostsController,
     CommentsController,
-    UsersController,
     TestingController,
   ],
   providers: [
@@ -49,9 +52,8 @@ import { TestingController } from './controllers/testing.controller';
     PostsRepository,
     PostsQueryRepository,
     CommentsQueryRepository,
-    UsersService,
-    UsersRepository,
-    UsersQueryRepository,
+    CommentsRepository,
+    CommentsService,
   ],
 })
 export class AppModule {}

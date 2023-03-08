@@ -21,8 +21,26 @@ let UsersRepository = class UsersRepository {
     constructor(userModel) {
         this.userModel = userModel;
     }
-    async findUserInstance(_id) {
+    async findUserById(_id) {
         const userInstance = await this.userModel.findOne({ _id: _id });
+        return userInstance;
+    }
+    async findUserByConfirmationCode(code) {
+        const userInstance = await this.userModel.findOne({
+            'emailConfirmation.confirmationCode': code,
+        });
+        return userInstance;
+    }
+    async findUserByRecoveryCode(code) {
+        const userInstance = await this.userModel.findOne({
+            'passwordRecovery.recoveryCode': code,
+        });
+        return userInstance;
+    }
+    async findUserByLoginOrEmail(loginOrEmail) {
+        const userInstance = await this.userModel.findOne({
+            $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }],
+        });
         return userInstance;
     }
     async save(instance) {

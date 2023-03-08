@@ -10,21 +10,20 @@ import {
   updatePostModel,
 } from '../domain/posts.schema';
 import { BlogsQueryRepository } from '../repos/blogs.query-repo';
+import { commentViewModel, createCommentModel } from '../domain/comments.schema';
+import { CommentsService } from './comments.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     protected postsRepository: PostsRepository,
     protected blogsQueryRepository: BlogsQueryRepository,
+    protected commentsService: CommentsService,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
   ) {}
 
-  async createPost(
-    postBody: createPostInputModelWithBlogId,
-  ): Promise<postViewModel> {
-    const foundBlog = await this.blogsQueryRepository.findBlogById(
-      postBody.blogId,
-    );
+  async createPost(postBody: createPostInputModelWithBlogId): Promise<postViewModel> {
+    const foundBlog = await this.blogsQueryRepository.findBlogById(postBody.blogId);
     const postDTO = {
       _id: new mongoose.Types.ObjectId(),
       title: postBody.title,
@@ -68,10 +67,7 @@ export class PostsService {
     return true;
   }
 
-  async UpdatePostById(
-    postBody: updatePostModel,
-    postId: string,
-  ): Promise<boolean> {
+  async UpdatePostById(postBody: updatePostModel, postId: string): Promise<boolean> {
     const _id = new mongoose.Types.ObjectId(postId);
     const postInstance = await this.postsRepository.findPostInstance(_id);
     if (!postInstance) return false;
@@ -81,5 +77,15 @@ export class PostsService {
     postInstance.blogId = postBody.blogId;
     await this.postsRepository.save(postInstance);
     return true;
+  }
+  async createComment(
+    postId: string,
+    inputModel: createCommentModel,
+    userId: mongoose.Types.ObjectId,
+  ): Promise<commentViewModel | null> {
+    const _id = new mongoose.Types.ObjectId(postId);
+    const postInstance = await this.postsRepository.findPostInstance(_id);
+    if (!postInstance) return null;
+    return await this.commentsService.createComment(postId, inputModel, userId);
   }
 }

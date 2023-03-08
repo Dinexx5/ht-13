@@ -19,9 +19,9 @@ const mongoose_2 = require("mongoose");
 function mapDbUserToUserViewModel(user) {
     return {
         id: user._id.toString(),
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt,
+        login: user.accountData.login,
+        email: user.accountData.email,
+        createdAt: user.accountData.createdAt,
     };
 }
 let UsersQueryRepository = class UsersQueryRepository {
@@ -34,15 +34,15 @@ let UsersQueryRepository = class UsersQueryRepository {
         const skippedUsersCount = (+pageNumber - 1) * +pageSize;
         const filter = {};
         if (searchLoginTerm && !searchEmailTerm) {
-            filter.login = { $regex: searchLoginTerm, $options: 'i' };
+            filter['accountData.login'] = { $regex: searchLoginTerm, $options: 'i' };
         }
         if (searchEmailTerm && !searchLoginTerm) {
-            filter.email = { $regex: searchEmailTerm, $options: 'i' };
+            filter['accountData.email'] = { $regex: searchEmailTerm, $options: 'i' };
         }
         if (searchLoginTerm && searchEmailTerm) {
             filter.$or = [
-                { email: { $regex: searchEmailTerm, $options: 'i' } },
-                { login: { $regex: searchLoginTerm, $options: 'i' } },
+                { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
+                { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
             ];
         }
         const countAll = await this.userModel.countDocuments(filter);

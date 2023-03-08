@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_schema_1 = require("../domain/users.schema");
-const users_service_1 = require("../domain/users.service");
+const users_service_1 = require("../application/users.service");
 const users_query_repo_1 = require("../repos/users.query-repo");
+const auth_guard_1 = require("../auth/guards/auth.guard");
 let UsersController = class UsersController {
     constructor(usersService, usersQueryRepository) {
         this.usersService = usersService;
@@ -39,6 +40,7 @@ let UsersController = class UsersController {
     }
 };
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -46,6 +48,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getUsers", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -53,6 +56,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUser", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Res)()),

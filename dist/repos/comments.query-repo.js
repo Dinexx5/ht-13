@@ -37,7 +37,7 @@ let CommentsQueryRepository = class CommentsQueryRepository {
         this.commentModel = commentModel;
     }
     async getAllCommentsForPost(query, postId) {
-        const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10, } = query;
+        const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
         const sortDirectionNumber = sortDirection === 'desc' ? -1 : 1;
         const skippedCommentsNumber = (+pageNumber - 1) * +pageSize;
         const countAll = await this.commentModel.countDocuments({ postId: postId });

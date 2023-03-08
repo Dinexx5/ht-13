@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { IsUrl, Length } from 'class-validator';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
@@ -27,19 +28,21 @@ export class Blog {
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 export class createBlogModel {
-  constructor(
-    public name: string,
-    public description: string,
-    public websiteUrl: string,
-  ) {}
+  @Length(0, 15)
+  name: string;
+  @Length(0, 500)
+  description: string;
+  @IsUrl()
+  websiteUrl: string;
 }
 
 export class updateBlogModel {
-  constructor(
-    public name: string,
-    public description: string,
-    public websiteUrl: string,
-  ) {}
+  @Length(0, 15)
+  name: string;
+  @Length(0, 500)
+  description: string;
+  @IsUrl()
+  websiteUrl: string;
 }
 
 export class blogViewModel {

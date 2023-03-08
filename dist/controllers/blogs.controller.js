@@ -20,6 +20,7 @@ const blogs_schema_1 = require("../domain/blogs.schema");
 const posts_schema_1 = require("../domain/posts.schema");
 const posts_service_1 = require("../application/posts.service");
 const posts_query_repo_1 = require("../repos/posts.query-repo");
+const auth_guard_1 = require("../auth/guards/auth.guard");
 let BlogsController = class BlogsController {
     constructor(blogsService, blogsQueryRepository, postsService, postsQueryRepository) {
         this.blogsService = blogsService;
@@ -90,6 +91,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "getBlog", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -97,6 +99,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "createBlog", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id')),
@@ -106,6 +109,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "updateBlog", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Res)()),
@@ -114,6 +118,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "deleteBlog", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Post)(':id/posts'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id')),

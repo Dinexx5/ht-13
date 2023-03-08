@@ -17,9 +17,7 @@ function mapFoundBlogToBlogViewModel(blog: BlogDocument): blogViewModel {
 export class BlogsQueryRepository {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
-  async getAllBlogs(
-    query: paginationQuerys,
-  ): Promise<paginatedViewModel<blogViewModel[]>> {
+  async getAllBlogs(query: paginationQuerys): Promise<paginatedViewModel<blogViewModel[]>> {
     const {
       sortDirection = 'desc',
       sortBy = 'createdAt',

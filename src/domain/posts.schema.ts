@@ -56,11 +56,7 @@ export class Post {
 export const PostSchema = SchemaFactory.createForClass(Post);
 
 export class createPostModel {
-  constructor(
-    public title: string,
-    public shortDescription: string,
-    public content: string,
-  ) {}
+  constructor(public title: string, public shortDescription: string, public content: string) {}
 }
 
 export class createPostInputModelWithBlogId {

@@ -48,7 +48,7 @@ export class Comment {
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
 export class createCommentModel {
-  constructor(public content: string) {}
+  content: string;
 }
 
 export class commentViewModel {

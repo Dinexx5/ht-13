@@ -26,16 +26,19 @@ const comments_controller_1 = require("./controllers/comments.controller");
 const comments_query_repo_1 = require("./repos/comments.query-repo");
 const comments_schema_1 = require("./domain/comments.schema");
 const users_schema_1 = require("./domain/users.schema");
-const users_controller_1 = require("./controllers/users.controller");
-const users_service_1 = require("./domain/users.service");
-const users_repository_1 = require("./repos/users.repository");
-const users_query_repo_1 = require("./repos/users.query-repo");
 const testing_controller_1 = require("./controllers/testing.controller");
+const users_module_1 = require("./users.module");
+const auth_module_1 = require("./auth/auth.module");
+const auth_controller_1 = require("./controllers/auth.controller");
+const comments_repository_1 = require("./repos/comments.repository");
+const comments_service_1 = require("./application/comments.service");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
             config_1.ConfigModule.forRoot(),
             mongoose_1.MongooseModule.forRoot(process.env.MONGO_URL),
             mongoose_1.MongooseModule.forFeature([{ name: blogs_schema_1.Blog.name, schema: blogs_schema_1.BlogSchema }]),
@@ -44,11 +47,11 @@ AppModule = __decorate([
             mongoose_1.MongooseModule.forFeature([{ name: users_schema_1.User.name, schema: users_schema_1.UserSchema }]),
         ],
         controllers: [
+            auth_controller_1.AuthController,
             app_controller_1.AppController,
             blogs_controller_1.BlogsController,
             posts_controller_1.PostsController,
             comments_controller_1.CommentsController,
-            users_controller_1.UsersController,
             testing_controller_1.TestingController,
         ],
         providers: [
@@ -60,9 +63,8 @@ AppModule = __decorate([
             posts_repository_1.PostsRepository,
             posts_query_repo_1.PostsQueryRepository,
             comments_query_repo_1.CommentsQueryRepository,
-            users_service_1.UsersService,
-            users_repository_1.UsersRepository,
-            users_query_repo_1.UsersQueryRepository,
+            comments_repository_1.CommentsRepository,
+            comments_service_1.CommentsService,
         ],
     })
 ], AppModule);

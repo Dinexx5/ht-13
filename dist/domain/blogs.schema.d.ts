@@ -13,13 +13,11 @@ export declare class createBlogModel {
     name: string;
     description: string;
     websiteUrl: string;
-    constructor(name: string, description: string, websiteUrl: string);
 }
 export declare class updateBlogModel {
     name: string;
     description: string;
     websiteUrl: string;
-    constructor(name: string, description: string, websiteUrl: string);
 }
 export declare class blogViewModel {
     id: string;

@@ -6,17 +6,15 @@ import { Model } from 'mongoose';
 function mapDbUserToUserViewModel(user: UserDocument): userViewModel {
   return {
     id: user._id.toString(),
-    login: user.login,
-    email: user.email,
-    createdAt: user.createdAt,
+    login: user.accountData.login,
+    email: user.accountData.email,
+    createdAt: user.accountData.createdAt,
   };
 }
 export class UsersQueryRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async getAllUsers(
-    query: paginationQuerys,
-  ): Promise<paginatedViewModel<userViewModel[]>> {
+  async getAllUsers(query: paginationQuerys): Promise<paginatedViewModel<userViewModel[]>> {
     const {
       sortDirection = 'desc',
       sortBy = 'createdAt',
@@ -29,23 +27,23 @@ export class UsersQueryRepository {
     const skippedUsersCount = (+pageNumber - 1) * +pageSize;
 
     const filter = {} as {
-      login?: { $regex: string; $options: string };
-      email?: { $regex: string; $options: string };
+      'accountData.login'?: { $regex: string; $options: string };
+      'accountData.email'?: { $regex: string; $options: string };
       $or?: [
-        { email: { $regex: string; $options: string } },
-        { login: { $regex: string; $options: string } },
+        { 'accountData.email': { $regex: string; $options: string } },
+        { 'accountData.login': { $regex: string; $options: string } },
       ];
     };
     if (searchLoginTerm && !searchEmailTerm) {
-      filter.login = { $regex: searchLoginTerm, $options: 'i' };
+      filter['accountData.login'] = { $regex: searchLoginTerm, $options: 'i' };
     }
     if (searchEmailTerm && !searchLoginTerm) {
-      filter.email = { $regex: searchEmailTerm, $options: 'i' };
+      filter['accountData.email'] = { $regex: searchEmailTerm, $options: 'i' };
     }
     if (searchLoginTerm && searchEmailTerm) {
       filter.$or = [
-        { email: { $regex: searchEmailTerm, $options: 'i' } },
-        { login: { $regex: searchLoginTerm, $options: 'i' } },
+        { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
+        { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
       ];
     }
 

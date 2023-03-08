@@ -17,12 +17,17 @@ const common_1 = require("@nestjs/common");
 const posts_schema_1 = require("../domain/posts.schema");
 const posts_service_1 = require("../application/posts.service");
 const posts_query_repo_1 = require("../repos/posts.query-repo");
+const comments_schema_1 = require("../domain/comments.schema");
 const comments_query_repo_1 = require("../repos/comments.query-repo");
+const auth_guard_1 = require("../auth/guards/auth.guard");
+const comments_service_1 = require("../application/comments.service");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let PostsController = class PostsController {
-    constructor(postsService, postsQueryRepository, commentsQueryRepository) {
+    constructor(postsService, postsQueryRepository, commentsQueryRepository, commentsService) {
         this.postsService = postsService;
         this.postsQueryRepository = postsQueryRepository;
         this.commentsQueryRepository = commentsQueryRepository;
+        this.commentsService = commentsService;
     }
     async getPosts(paginationQuery) {
         const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery);
@@ -61,6 +66,12 @@ let PostsController = class PostsController {
         const returnedComments = await this.commentsQueryRepository.getAllCommentsForPost(paginationQuery, postId);
         return res.send(returnedComments);
     }
+    async createComment(req, postId, inputModel, res) {
+        const newComment = await this.postsService.createComment(postId, inputModel, req.user);
+        if (!newComment)
+            return res.sendStatus(404);
+        return res.status(201).send(newComment);
+    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -78,6 +89,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPost", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -85,6 +97,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "createPost", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id')),
@@ -94,6 +107,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "updatePost", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Res)()),
@@ -110,11 +124,23 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getComments", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)(':id/comments'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, comments_schema_1.createCommentModel, Object]),
+    __metadata("design:returntype", Promise)
+], PostsController.prototype, "createComment", null);
 PostsController = __decorate([
     (0, common_1.Controller)('posts'),
     __metadata("design:paramtypes", [posts_service_1.PostsService,
         posts_query_repo_1.PostsQueryRepository,
-        comments_query_repo_1.CommentsQueryRepository])
+        comments_query_repo_1.CommentsQueryRepository,
+        comments_service_1.CommentsService])
 ], PostsController);
 exports.PostsController = PostsController;
 //# sourceMappingURL=posts.controller.js.map
