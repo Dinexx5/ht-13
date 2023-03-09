@@ -22,8 +22,18 @@ let DevicesRepository = class DevicesRepository {
         this.deviceModel = deviceModel;
     }
     async findDeviceById(deviceId) {
-        const deviceInstance = await this.deviceModel.findOne({ deviceId: deviceId });
-        return deviceInstance;
+        return this.deviceModel.findOne({ deviceId: deviceId });
+    }
+    async findSessions(userId) {
+        return this.deviceModel.find({ userId: userId }).lean();
+    }
+    async deleteAllSessionsWithoutActive(deviceId, userId) {
+        await this.deviceModel.deleteMany({
+            $and: [{ userId: userId }, { deviceId: { $ne: deviceId } }],
+        });
+    }
+    async findSessionByDeviceId(deviceId) {
+        return this.deviceModel.findOne({ deviceId: deviceId });
     }
     async save(instance) {
         instance.save();

@@ -10,10 +10,9 @@ exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
-const jwt_strategy_1 = require("./strategies/jwt.strategy");
+const access_jwt_strategy_1 = require("./strategies/access.jwt.strategy");
 const local_strategy_1 = require("./strategies/local.strategy");
 const users_module_1 = require("../users.module");
-const constants_1 = require("./constants");
 const auth_service_1 = require("./auth-service");
 const mongoose_1 = require("@nestjs/mongoose");
 const token_schema_1 = require("../domain/token.schema");
@@ -31,15 +30,12 @@ AuthModule = __decorate([
             mongoose_1.MongooseModule.forFeature([{ name: devices_schema_1.Device.name, schema: devices_schema_1.DeviceSchema }]),
             users_module_1.UsersModule,
             passport_1.PassportModule,
-            jwt_1.JwtModule.register({
-                secret: constants_1.jwtConstants.secret,
-                signOptions: { expiresIn: '6000s' },
-            }),
+            jwt_1.JwtModule.register({}),
         ],
         providers: [
             auth_service_1.AuthService,
             local_strategy_1.LocalStrategy,
-            jwt_strategy_1.JwtStrategy,
+            access_jwt_strategy_1.AccessJwtStrategy,
             token_repository_1.TokenRepository,
             devices_service_1.DevicesService,
             devices_repository_1.DevicesRepository,

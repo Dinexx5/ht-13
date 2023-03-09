@@ -54,10 +54,10 @@ let AuthController = class AuthController {
         });
         res.json({ accessToken: newAccessToken });
     }
-    async deleteSession(req, res) {
+    async deleteCurrentSession(req, res) {
         const refreshToken = req.cookies.refreshToken;
-        await this.authService.deleteSession(refreshToken);
-        await this.authService.deleteDevice(refreshToken);
+        await this.authService.deleteCurrentToken(refreshToken);
+        await this.authService.deleteDeviceForLogout(refreshToken);
         return res.sendStatus(204);
     }
     async registerUser(inputModel, res) {
@@ -126,7 +126,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "deleteSession", null);
+], AuthController.prototype, "deleteCurrentSession", null);
 __decorate([
     (0, common_1.Post)('registration'),
     __param(0, (0, common_1.Body)()),

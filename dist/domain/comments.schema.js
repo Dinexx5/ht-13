@@ -9,15 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentViewModel = exports.createCommentModel = exports.CommentSchema = exports.Comment = exports.CommentatorModel = exports.LikesInfo = exports.LikingUsers = void 0;
+exports.CommentViewModel = exports.LikeInputModel = exports.CreateCommentModel = exports.CommentSchema = exports.Comment = exports.CommentatorModel = exports.LikesInfo = exports.LikingUsers = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let LikingUsers = class LikingUsers {
 };
 __decorate([
     (0, mongoose_1.Prop)(),
-    __metadata("design:type", mongoose_2.default.Schema.Types.ObjectId)
-], LikingUsers.prototype, "_id", void 0);
+    __metadata("design:type", String)
+], LikingUsers.prototype, "id", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
@@ -89,13 +89,13 @@ Comment = __decorate([
 ], Comment);
 exports.Comment = Comment;
 exports.CommentSchema = mongoose_1.SchemaFactory.createForClass(Comment);
-class createCommentModel {
-    constructor(content) {
-        this.content = content;
-    }
+class CreateCommentModel {
 }
-exports.createCommentModel = createCommentModel;
-class commentViewModel {
+exports.CreateCommentModel = CreateCommentModel;
+class LikeInputModel {
+}
+exports.LikeInputModel = LikeInputModel;
+class CommentViewModel {
     constructor(id, content, commentatorInfo, createdAt, likesInfo) {
         this.id = id;
         this.content = content;
@@ -104,5 +104,5 @@ class commentViewModel {
         this.likesInfo = likesInfo;
     }
 }
-exports.commentViewModel = commentViewModel;
+exports.CommentViewModel = CommentViewModel;
 //# sourceMappingURL=comments.schema.js.map

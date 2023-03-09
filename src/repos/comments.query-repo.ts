@@ -1,9 +1,38 @@
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { Comment, CommentDocument, commentViewModel } from '../domain/comments.schema';
+import { Comment, CommentDocument, CommentViewModel } from '../domain/comments.schema';
 import { paginatedViewModel, paginationQuerys } from '../models/pagination';
 
-function mapperToCommentViewModel(comment: CommentDocument): commentViewModel {
+function mapCommentToViewModel(comment: CommentDocument, userId?: string | null): CommentViewModel {
+  if (!userId) {
+    return mapperToCommentViewModel(comment);
+  }
+  const isUserLikedBefore = comment.likingUsers.find((user) => user.id === userId)!;
+  if (!isUserLikedBefore) {
+    return mapperToCommentViewModel(comment);
+  }
+  const myStatus = isUserLikedBefore.myStatus;
+  return mapperToCommentViewModel(comment, myStatus);
+}
+
+function mapCommentsToViewModel(this: any, comment: CommentDocument): CommentViewModel {
+  if (!this || !this.user) {
+    return mapperToCommentViewModel(comment);
+  }
+  const userId = this.user;
+  const isUserLikedBefore = comment.likingUsers.find((user) => user.id === userId)!;
+  if (!isUserLikedBefore) {
+    return mapperToCommentViewModel(comment);
+  }
+  const myStatus = isUserLikedBefore.myStatus;
+  return mapperToCommentViewModel(comment, myStatus);
+}
+
+function mapperToCommentViewModel(comment: CommentDocument, myStatus?: string): CommentViewModel {
+  const filter = { myStatus: 'None' };
+  if (myStatus) {
+    filter.myStatus = myStatus;
+  }
   return {
     id: comment._id.toString(),
     content: comment.content,
@@ -15,7 +44,7 @@ function mapperToCommentViewModel(comment: CommentDocument): commentViewModel {
     likesInfo: {
       likesCount: comment.likesInfo.likesCount,
       dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus: 'None',
+      myStatus: filter.myStatus,
     },
   };
 }
@@ -25,7 +54,8 @@ export class CommentsQueryRepository {
   async getAllCommentsForPost(
     query: paginationQuerys,
     postId: string,
-  ): Promise<paginatedViewModel<commentViewModel[]>> {
+    userId?: string | null,
+  ): Promise<paginatedViewModel<CommentViewModel[]>> {
     const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
 
     const sortDirectionNumber: 1 | -1 = sortDirection === 'desc' ? -1 : 1;
@@ -39,7 +69,7 @@ export class CommentsQueryRepository {
       .limit(+pageSize)
       .lean();
 
-    const commentsView = commentsDb.map(mapperToCommentViewModel);
+    const commentsView = commentsDb.map(mapCommentsToViewModel, { user: userId });
     return {
       pagesCount: Math.ceil(countAll / +pageSize),
       page: +pageNumber,
@@ -49,12 +79,16 @@ export class CommentsQueryRepository {
     };
   }
 
-  async findCommentById(commentId: string): Promise<commentViewModel | null> {
+  async findCommentById(
+    commentId: string,
+    userId?: string | null,
+  ): Promise<CommentViewModel | null> {
     const _id = new mongoose.Types.ObjectId(commentId);
     const foundComment: CommentDocument | null = await this.commentModel.findOne({ _id: _id });
+    console.log(foundComment);
     if (!foundComment) {
       return null;
     }
-    return mapperToCommentViewModel(foundComment);
+    return mapCommentToViewModel(foundComment, userId);
   }
 }

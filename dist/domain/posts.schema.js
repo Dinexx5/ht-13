@@ -9,15 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postViewModel = exports.updatePostModel = exports.createPostInputModelWithBlogId = exports.createPostModel = exports.PostSchema = exports.Post = exports.LikeModel = exports.ExtendedLikesInfo = exports.LikingUsers = void 0;
+exports.PostViewModel = exports.updatePostModel = exports.createPostInputModelWithBlogId = exports.createPostModel = exports.PostSchema = exports.Post = exports.LikeModel = exports.ExtendedLikesInfo = exports.LikingUsers = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let LikingUsers = class LikingUsers {
 };
 __decorate([
     (0, mongoose_1.Prop)(),
-    __metadata("design:type", mongoose_2.default.Schema.Types.ObjectId)
-], LikingUsers.prototype, "_id", void 0);
+    __metadata("design:type", String)
+], LikingUsers.prototype, "id", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
@@ -131,7 +131,7 @@ class updatePostModel {
     }
 }
 exports.updatePostModel = updatePostModel;
-class postViewModel {
+class PostViewModel {
     constructor(id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo) {
         this.id = id;
         this.title = title;
@@ -143,5 +143,5 @@ class postViewModel {
         this.extendedLikesInfo = extendedLikesInfo;
     }
 }
-exports.postViewModel = postViewModel;
+exports.PostViewModel = PostViewModel;
 //# sourceMappingURL=posts.schema.js.map

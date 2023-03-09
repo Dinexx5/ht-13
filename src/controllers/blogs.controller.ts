@@ -15,7 +15,7 @@ import { BlogsQueryRepository } from '../repos/blogs.query-repo';
 import { blogViewModel, createBlogModel, updateBlogModel } from '../domain/blogs.schema';
 import { paginatedViewModel } from '../models/pagination';
 import { Response } from 'express';
-import { createPostModel, postViewModel } from '../domain/posts.schema';
+import { createPostModel, PostViewModel } from '../domain/posts.schema';
 import { PostsService } from '../application/posts.service';
 import { PostsQueryRepository } from '../repos/posts.query-repo';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -82,7 +82,7 @@ export class BlogsController {
       return res.sendStatus(404);
     }
     const postDto = { ...inputModel, blogId };
-    const createdInstance: postViewModel = await this.postsService.createPost(postDto);
+    const createdInstance: PostViewModel = await this.postsService.createPost(postDto);
     return res.send(createdInstance);
   }
   @Get(':id/posts')
@@ -91,7 +91,7 @@ export class BlogsController {
     if (!blog) {
       return res.sendStatus(404);
     }
-    const returnedPosts: paginatedViewModel<postViewModel[]> =
+    const returnedPosts: paginatedViewModel<PostViewModel[]> =
       await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
     return res.send(returnedPosts);
   }

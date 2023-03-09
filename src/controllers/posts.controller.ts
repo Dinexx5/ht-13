@@ -15,34 +15,51 @@ import { paginatedViewModel, paginationQuerys } from '../models/pagination';
 import { Response } from 'express';
 import {
   createPostInputModelWithBlogId,
-  postViewModel,
+  PostViewModel,
   updatePostModel,
 } from '../domain/posts.schema';
 import { PostsService } from '../application/posts.service';
 import { PostsQueryRepository } from '../repos/posts.query-repo';
-import { commentViewModel, createCommentModel } from '../domain/comments.schema';
+import { CommentViewModel, CreateCommentModel, LikeInputModel } from '../domain/comments.schema';
 import { CommentsQueryRepository } from '../repos/comments.query-repo';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { CommentsService } from '../application/comments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthService } from '../auth/auth-service';
 
 @Controller('posts')
 export class PostsController {
   constructor(
+    protected authService: AuthService,
     protected postsService: PostsService,
     protected postsQueryRepository: PostsQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
-    protected commentsService: CommentsService,
   ) {}
   @Get()
-  async getPosts(@Query() paginationQuery) {
-    const returnedPosts: paginatedViewModel<postViewModel[]> =
-      await this.postsQueryRepository.getAllPosts(paginationQuery);
+  async getPosts(@Request() req, @Query() paginationQuery) {
+    const isToken = { token: null };
+    if (!req.headers.authorization) isToken.token = null;
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const result = await this.authService.getTokenInfo(token);
+      isToken.token = result.userId;
+    }
+    const returnedPosts: paginatedViewModel<PostViewModel[]> =
+      await this.postsQueryRepository.getAllPosts(paginationQuery, undefined, isToken.token);
     return returnedPosts;
   }
   @Get(':id')
-  async getPost(@Param('id') id: string, @Res() res: Response) {
-    const post: postViewModel | null = await this.postsQueryRepository.findPostById(id);
+  async getPost(@Request() req, @Param('id') id: string, @Res() res: Response) {
+    const isToken = { token: null };
+    if (!req.headers.authorization) isToken.token = null;
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const result = await this.authService.getTokenInfo(token);
+      isToken.token = result.userId;
+    }
+    const post: PostViewModel | null = await this.postsQueryRepository.findPostById(
+      id,
+      isToken.token,
+    );
     if (!post) {
       return res.sendStatus(404);
     }
@@ -78,16 +95,28 @@ export class PostsController {
   }
   @Get(':id/comments')
   async getComments(
+    @Request() req,
     @Param('id') postId: string,
     @Query() paginationQuery: paginationQuerys,
     @Res() res: Response,
   ) {
-    const foundPost: postViewModel | null = await this.postsQueryRepository.findPostById(postId);
+    const isToken = { token: null };
+    if (!req.headers.authorization) isToken.token = null;
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const result = await this.authService.getTokenInfo(token);
+      isToken.token = result.userId;
+    }
+    const foundPost: PostViewModel | null = await this.postsQueryRepository.findPostById(postId);
     if (!foundPost) {
       return res.sendStatus(404);
     }
-    const returnedComments: paginatedViewModel<commentViewModel[]> =
-      await this.commentsQueryRepository.getAllCommentsForPost(paginationQuery, postId);
+    const returnedComments: paginatedViewModel<CommentViewModel[]> =
+      await this.commentsQueryRepository.getAllCommentsForPost(
+        paginationQuery,
+        postId,
+        isToken.token,
+      );
     return res.send(returnedComments);
   }
   @UseGuards(JwtAuthGuard)
@@ -95,15 +124,31 @@ export class PostsController {
   async createComment(
     @Request() req,
     @Param('id') postId: string,
-    @Body() inputModel: createCommentModel,
+    @Body() inputModel: CreateCommentModel,
     @Res() res: Response,
   ) {
-    const newComment: commentViewModel = await this.postsService.createComment(
+    const newComment: CommentViewModel = await this.postsService.createComment(
       postId,
       inputModel,
       req.user,
     );
     if (!newComment) return res.sendStatus(404);
     return res.status(201).send(newComment);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id/like-status')
+  async likePost(
+    @Request() req,
+    @Param('id') postId: string,
+    @Body() inputModel: LikeInputModel,
+    @Res() res: Response,
+  ) {
+    const isLiked: boolean = await this.postsService.likePost(
+      postId,
+      inputModel.likeStatus,
+      req.user,
+    );
+    if (!isLiked) return res.sendStatus(404);
+    return res.sendStatus(204);
   }
 }

@@ -6,7 +6,7 @@ export type PostDocument = HydratedDocument<Post>;
 @Schema()
 export class LikingUsers {
   @Prop()
-  _id: mongoose.Schema.Types.ObjectId;
+  id: string;
   @Prop()
   myStatus: string;
 }
@@ -46,9 +46,9 @@ export class Post {
   @Prop()
   createdAt: string;
   @Prop()
-  likingUsers: LikingUsers[];
+  likingUsers: [LikingUsers];
   @Prop()
-  likes: LikeModel[];
+  likes: [LikeModel];
   @Prop()
   extendedLikesInfo: ExtendedLikesInfo;
 }
@@ -77,7 +77,7 @@ export class updatePostModel {
   ) {}
 }
 
-export class postViewModel {
+export class PostViewModel {
   constructor(
     public id: string,
     public title: string,

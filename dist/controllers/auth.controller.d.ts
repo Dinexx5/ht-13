@@ -9,7 +9,7 @@ export declare class AuthController {
     login(req: any, res: Response): Promise<void>;
     getProfile(req: any, res: Response): Promise<void>;
     getRefreshToken(req: any, res: Response): Promise<void>;
-    deleteSession(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
+    deleteCurrentSession(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     registerUser(inputModel: createUserModel, res: Response): Promise<Response<any, Record<string, any>>>;
     resendEmail(inputModel: resendEmailModel, res: Response): Promise<Response<any, Record<string, any>>>;
     confirmEmail(inputModel: confirmEmailModel, res: Response): Promise<Response<any, Record<string, any>>>;

@@ -16,7 +16,35 @@ exports.PostsQueryRepository = void 0;
 const posts_schema_1 = require("../domain/posts.schema");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-function mapperToPostViewModel(post) {
+function mapPostToViewModel(post, userId) {
+    if (!userId) {
+        return mapperToPostViewModel(post);
+    }
+    const isUserLikedBefore = post.likingUsers.find((user) => user.id === userId);
+    if (!isUserLikedBefore) {
+        return mapperToPostViewModel(post);
+    }
+    const myStatus = isUserLikedBefore.myStatus;
+    return mapperToPostViewModel(post, myStatus);
+}
+function mapPostsToViewModel(post) {
+    if (!this || !this.user) {
+        return mapperToPostViewModel(post);
+    }
+    const userId = this.user;
+    const isUserLikedBefore = post.likingUsers.find((user) => user.id === userId);
+    if (!isUserLikedBefore) {
+        return mapperToPostViewModel(post);
+    }
+    const myStatus = isUserLikedBefore.myStatus;
+    return mapperToPostViewModel(post, myStatus);
+}
+function mapperToPostViewModel(post, myStatus) {
+    const filter = { myStatus: 'None' };
+    if (myStatus) {
+        filter.myStatus = myStatus;
+    }
+    console.log(post);
     return {
         id: post._id.toString(),
         title: post.title,
@@ -28,8 +56,15 @@ function mapperToPostViewModel(post) {
         extendedLikesInfo: {
             likesCount: post.extendedLikesInfo.likesCount,
             dislikesCount: post.extendedLikesInfo.dislikesCount,
-            myStatus: 'None',
-            newestLikes: [],
+            myStatus: filter.myStatus,
+            newestLikes: post.likes
+                .slice(-3)
+                .map((like) => ({
+                addedAt: like.addedAt,
+                userId: like.userId,
+                login: like.login,
+            }))
+                .reverse(),
         },
     };
 }
@@ -37,7 +72,7 @@ let PostsQueryRepository = class PostsQueryRepository {
     constructor(postModel) {
         this.postModel = postModel;
     }
-    async getAllPosts(query, blogId) {
+    async getAllPosts(query, blogId, userId) {
         const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
         const sortDirectionNumber = sortDirection === 'desc' ? -1 : 1;
         const skippedPostsNumber = (+pageNumber - 1) * +pageSize;
@@ -56,7 +91,7 @@ let PostsQueryRepository = class PostsQueryRepository {
             .skip(skippedPostsNumber)
             .limit(+pageSize)
             .lean();
-        const postsView = postsDb.map(mapperToPostViewModel);
+        const postsView = postsDb.map(mapPostsToViewModel, { user: userId }).reverse();
         return {
             pagesCount: Math.ceil(countAll / +pageSize),
             page: +pageNumber,
@@ -65,7 +100,7 @@ let PostsQueryRepository = class PostsQueryRepository {
             items: postsView,
         };
     }
-    async findPostById(postId) {
+    async findPostById(postId, userId) {
         const _id = new mongoose_2.default.Types.ObjectId(postId);
         const foundPost = await this.postModel.findOne({
             _id: _id,
@@ -73,7 +108,7 @@ let PostsQueryRepository = class PostsQueryRepository {
         if (!foundPost) {
             return null;
         }
-        return mapperToPostViewModel(foundPost);
+        return mapPostToViewModel(foundPost, userId);
     }
 };
 PostsQueryRepository = __decorate([

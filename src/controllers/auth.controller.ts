@@ -61,10 +61,10 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async deleteSession(@Request() req, @Res() res: Response) {
+  async deleteCurrentSession(@Request() req, @Res() res: Response) {
     const refreshToken = req.cookies.refreshToken;
-    await this.authService.deleteSession(refreshToken);
-    await this.authService.deleteDevice(refreshToken);
+    await this.authService.deleteCurrentToken(refreshToken);
+    await this.authService.deleteDeviceForLogout(refreshToken);
     return res.sendStatus(204);
   }
 

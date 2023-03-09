@@ -22,6 +22,7 @@ let DevicesService = class DevicesService {
     constructor(devicesRepository, deviceModel) {
         this.devicesRepository = devicesRepository;
         this.deviceModel = deviceModel;
+        this.filter = { status: '204' };
     }
     async createDevice(userId, ip, deviceName, deviceId, issuedAt) {
         const deviceDTO = {
@@ -35,9 +36,27 @@ let DevicesService = class DevicesService {
         const deviceInstance = new this.deviceModel(deviceDTO);
         await this.devicesRepository.save(deviceInstance);
     }
-    async deleteDevice(deviceId) {
-        const deviceInstance = await this.devicesRepository.findDeviceById(deviceId);
-        await deviceInstance.deleteOne();
+    async findActiveDevices(userId) {
+        const foundDevices = await this.devicesRepository.findSessions(userId);
+        return foundDevices.map((device) => ({
+            ip: device.ip,
+            title: device.title,
+            lastActiveDate: device.lastActiveDate,
+            deviceId: device.deviceId,
+        }));
+    }
+    async deleteSessionById(userId, deviceId) {
+        const foundDevice = await this.devicesRepository.findSessionByDeviceId(deviceId);
+        if (!foundDevice) {
+            this.filter.status = '404';
+            return this.filter.status;
+        }
+        if (foundDevice.userId.toString() !== userId.toString()) {
+            this.filter.status = '403';
+            return this.filter.status;
+        }
+        await foundDevice.deleteOne();
+        return this.filter.status;
     }
 };
 DevicesService = __decorate([

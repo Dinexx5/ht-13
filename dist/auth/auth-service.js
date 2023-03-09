@@ -24,14 +24,19 @@ const devices_service_1 = require("../application/devices.service");
 const uuid_1 = require("uuid");
 const date_fns_1 = require("date-fns");
 const email_adapter_1 = require("../adapters/email.adapter");
+const devices_schema_1 = require("../domain/devices.schema");
+const devices_repository_1 = require("../repos/devices.repository");
+const constants_1 = require("./constants");
 let AuthService = class AuthService {
-    constructor(emailAdapter, usersService, jwtService, tokenRepository, devicesService, tokenModel) {
+    constructor(emailAdapter, usersService, jwtService, tokenRepository, devicesService, devicesRepository, tokenModel, deviceModel) {
         this.emailAdapter = emailAdapter;
         this.usersService = usersService;
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.devicesService = devicesService;
+        this.devicesRepository = devicesRepository;
         this.tokenModel = tokenModel;
+        this.deviceModel = deviceModel;
     }
     async validateUser(username, pass) {
         const user = await this.usersService.findUserByLoginOrEmail(username);
@@ -42,13 +47,21 @@ let AuthService = class AuthService {
     }
     async createJwtAccessToken(userId) {
         const payload = { userId: userId };
-        return this.jwtService.sign(payload);
+        const accessToken = this.jwtService.sign(payload, {
+            secret: constants_1.jwtConstants.secret,
+            expiresIn: '6000s',
+        });
+        console.log(accessToken);
+        return accessToken;
     }
     async createJwtRefreshToken(userId, deviceName, ip) {
         const deviceId = new Date().toISOString();
         const payload = { userId: userId, deviceId: deviceId };
-        const refreshToken = this.jwtService.sign(payload);
-        const result = this.jwtService.verify(refreshToken);
+        const refreshToken = this.jwtService.sign(payload, {
+            secret: constants_1.jwtConstants.secret,
+            expiresIn: '6000s',
+        });
+        const result = this.jwtService.verify(refreshToken, { secret: constants_1.jwtConstants.secret });
         const issuedAt = new Date(result.iat * 1000).toISOString();
         const expiredAt = new Date(result.exp * 1000).toISOString();
         const tokenMetaDTO = {
@@ -66,7 +79,7 @@ let AuthService = class AuthService {
         return refreshToken;
     }
     async updateJwtRefreshToken(refreshToken) {
-        const result = await this.getRefreshTokenInfo(refreshToken);
+        const result = await this.getTokenInfo(refreshToken);
         const { deviceId, userId, exp } = result;
         const previousExpirationDate = new Date(exp * 1000).toISOString();
         const tokenInstance = await this.tokenRepository.findToken(previousExpirationDate);
@@ -74,7 +87,7 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException();
         const newPayload = { userId: userId, deviceId: deviceId };
         const newRefreshToken = this.jwtService.sign(newPayload);
-        const newResult = await this.getRefreshTokenInfo(newRefreshToken);
+        const newResult = await this.getTokenInfo(newRefreshToken);
         const newIssuedAt = new Date(newResult.iat * 1000).toISOString();
         const newExpiredAt = new Date(newResult.exp * 1000).toISOString();
         tokenInstance.expiredAt = newExpiredAt;
@@ -82,27 +95,32 @@ let AuthService = class AuthService {
         await this.tokenRepository.save(tokenInstance);
         return newRefreshToken;
     }
-    async getRefreshTokenInfo(token) {
+    async getTokenInfo(token) {
         try {
-            const result = this.jwtService.verify(token);
+            const result = this.jwtService.verify(token, { secret: constants_1.jwtConstants.secret });
             return result;
         }
         catch (error) {
             return null;
         }
     }
-    async deleteSession(token) {
-        const result = await this.getRefreshTokenInfo(token);
+    async deleteCurrentToken(token) {
+        const result = await this.getTokenInfo(token);
         const expirationDate = new Date(result.exp * 1000).toISOString();
         const tokenInstance = await this.tokenRepository.findToken(expirationDate);
         if (!tokenInstance)
             throw new common_1.UnauthorizedException();
         await tokenInstance.deleteOne();
     }
-    async deleteDevice(token) {
-        const result = await this.getRefreshTokenInfo(token);
+    async deleteDeviceForLogout(token) {
+        const result = await this.getTokenInfo(token);
         const deviceId = result.deviceId;
-        await this.devicesService.deleteDevice(deviceId);
+        const deviceInstance = await this.devicesRepository.findDeviceById(deviceId);
+        await deviceInstance.deleteOne();
+    }
+    async deleteAllSessionsWithoutActive(refreshToken, userId) {
+        const result = await this.getTokenInfo(refreshToken);
+        await this.devicesRepository.deleteAllSessionsWithoutActive(result.deviceId, userId);
     }
     async createUser(inputModel) {
         const passwordHash = await this.usersService.generateHash(inputModel.password);
@@ -179,12 +197,15 @@ let AuthService = class AuthService {
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __param(5, (0, mongoose_2.InjectModel)(token_schema_1.Token.name)),
+    __param(6, (0, mongoose_2.InjectModel)(token_schema_1.Token.name)),
+    __param(7, (0, mongoose_2.InjectModel)(devices_schema_1.Device.name)),
     __metadata("design:paramtypes", [email_adapter_1.EmailAdapter,
         users_service_1.UsersService,
         jwt_1.JwtService,
         token_repository_1.TokenRepository,
         devices_service_1.DevicesService,
+        devices_repository_1.DevicesRepository,
+        mongoose_1.Model,
         mongoose_1.Model])
 ], AuthService);
 exports.AuthService = AuthService;

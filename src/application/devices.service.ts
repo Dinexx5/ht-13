@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import mongoose, { Model, ObjectId } from 'mongoose';
 import { DevicesRepository } from '../repos/devices.repository';
-import { Device, DeviceDocument } from '../domain/devices.schema';
+import { Device, DeviceDocument, deviceViewModel } from '../domain/devices.schema';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class DevicesService {
     protected devicesRepository: DevicesRepository,
     @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
-
+  filter: { status: string } = { status: '204' };
   async createDevice(
     userId: ObjectId,
     ip: string,
@@ -29,8 +29,26 @@ export class DevicesService {
     const deviceInstance = new this.deviceModel(deviceDTO);
     await this.devicesRepository.save(deviceInstance);
   }
-  async deleteDevice(deviceId: string) {
-    const deviceInstance = await this.devicesRepository.findDeviceById(deviceId);
-    await deviceInstance.deleteOne();
+  async findActiveDevices(userId: mongoose.Types.ObjectId): Promise<deviceViewModel[]> {
+    const foundDevices = await this.devicesRepository.findSessions(userId);
+    return foundDevices.map((device: DeviceDocument) => ({
+      ip: device.ip,
+      title: device.title,
+      lastActiveDate: device.lastActiveDate,
+      deviceId: device.deviceId,
+    }));
+  }
+  async deleteSessionById(userId: mongoose.Types.ObjectId, deviceId: string) {
+    const foundDevice = await this.devicesRepository.findSessionByDeviceId(deviceId);
+    if (!foundDevice) {
+      this.filter.status = '404';
+      return this.filter.status;
+    }
+    if (foundDevice.userId.toString() !== userId.toString()) {
+      this.filter.status = '403';
+      return this.filter.status;
+    }
+    await foundDevice.deleteOne();
+    return this.filter.status;
   }
 }

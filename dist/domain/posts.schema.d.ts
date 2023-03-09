@@ -1,7 +1,7 @@
 import mongoose, { HydratedDocument } from 'mongoose';
 export type PostDocument = HydratedDocument<Post>;
 export declare class LikingUsers {
-    _id: mongoose.Schema.Types.ObjectId;
+    id: string;
     myStatus: string;
 }
 export declare class ExtendedLikesInfo {
@@ -21,8 +21,8 @@ export declare class Post {
     blogId: string;
     blogName: string;
     createdAt: string;
-    likingUsers: LikingUsers[];
-    likes: LikeModel[];
+    likingUsers: [LikingUsers];
+    likes: [LikeModel];
     extendedLikesInfo: ExtendedLikesInfo;
 }
 export declare const PostSchema: mongoose.Schema<Post, mongoose.Model<Post, any, any, any, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, Post>;
@@ -46,7 +46,7 @@ export declare class updatePostModel {
     blogId: string;
     constructor(title: string, shortDescription: string, content: string, blogId: string);
 }
-export declare class postViewModel {
+export declare class PostViewModel {
     id: string;
     title: string;
     shortDescription: string;

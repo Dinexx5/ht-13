@@ -16,7 +16,34 @@ exports.CommentsQueryRepository = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const comments_schema_1 = require("../domain/comments.schema");
-function mapperToCommentViewModel(comment) {
+function mapCommentToViewModel(comment, userId) {
+    if (!userId) {
+        return mapperToCommentViewModel(comment);
+    }
+    const isUserLikedBefore = comment.likingUsers.find((user) => user.id === userId);
+    if (!isUserLikedBefore) {
+        return mapperToCommentViewModel(comment);
+    }
+    const myStatus = isUserLikedBefore.myStatus;
+    return mapperToCommentViewModel(comment, myStatus);
+}
+function mapCommentsToViewModel(comment) {
+    if (!this || !this.user) {
+        return mapperToCommentViewModel(comment);
+    }
+    const userId = this.user;
+    const isUserLikedBefore = comment.likingUsers.find((user) => user.id === userId);
+    if (!isUserLikedBefore) {
+        return mapperToCommentViewModel(comment);
+    }
+    const myStatus = isUserLikedBefore.myStatus;
+    return mapperToCommentViewModel(comment, myStatus);
+}
+function mapperToCommentViewModel(comment, myStatus) {
+    const filter = { myStatus: 'None' };
+    if (myStatus) {
+        filter.myStatus = myStatus;
+    }
     return {
         id: comment._id.toString(),
         content: comment.content,
@@ -28,7 +55,7 @@ function mapperToCommentViewModel(comment) {
         likesInfo: {
             likesCount: comment.likesInfo.likesCount,
             dislikesCount: comment.likesInfo.dislikesCount,
-            myStatus: 'None',
+            myStatus: filter.myStatus,
         },
     };
 }
@@ -36,7 +63,7 @@ let CommentsQueryRepository = class CommentsQueryRepository {
     constructor(commentModel) {
         this.commentModel = commentModel;
     }
-    async getAllCommentsForPost(query, postId) {
+    async getAllCommentsForPost(query, postId, userId) {
         const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
         const sortDirectionNumber = sortDirection === 'desc' ? -1 : 1;
         const skippedCommentsNumber = (+pageNumber - 1) * +pageSize;
@@ -47,7 +74,7 @@ let CommentsQueryRepository = class CommentsQueryRepository {
             .skip(skippedCommentsNumber)
             .limit(+pageSize)
             .lean();
-        const commentsView = commentsDb.map(mapperToCommentViewModel);
+        const commentsView = commentsDb.map(mapCommentsToViewModel, { user: userId });
         return {
             pagesCount: Math.ceil(countAll / +pageSize),
             page: +pageNumber,
@@ -56,13 +83,14 @@ let CommentsQueryRepository = class CommentsQueryRepository {
             items: commentsView,
         };
     }
-    async findCommentById(commentId) {
+    async findCommentById(commentId, userId) {
         const _id = new mongoose_2.default.Types.ObjectId(commentId);
         const foundComment = await this.commentModel.findOne({ _id: _id });
+        console.log(foundComment);
         if (!foundComment) {
             return null;
         }
-        return mapperToCommentViewModel(foundComment);
+        return mapCommentToViewModel(foundComment, userId);
     }
 };
 CommentsQueryRepository = __decorate([

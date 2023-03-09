@@ -20,21 +20,37 @@ const posts_query_repo_1 = require("../repos/posts.query-repo");
 const comments_schema_1 = require("../domain/comments.schema");
 const comments_query_repo_1 = require("../repos/comments.query-repo");
 const auth_guard_1 = require("../auth/guards/auth.guard");
-const comments_service_1 = require("../application/comments.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const auth_service_1 = require("../auth/auth-service");
 let PostsController = class PostsController {
-    constructor(postsService, postsQueryRepository, commentsQueryRepository, commentsService) {
+    constructor(authService, postsService, postsQueryRepository, commentsQueryRepository) {
+        this.authService = authService;
         this.postsService = postsService;
         this.postsQueryRepository = postsQueryRepository;
         this.commentsQueryRepository = commentsQueryRepository;
-        this.commentsService = commentsService;
     }
-    async getPosts(paginationQuery) {
-        const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery);
+    async getPosts(req, paginationQuery) {
+        const isToken = { token: null };
+        if (!req.headers.authorization)
+            isToken.token = null;
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1];
+            const result = await this.authService.getTokenInfo(token);
+            isToken.token = result.userId;
+        }
+        const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery, undefined, isToken.token);
         return returnedPosts;
     }
-    async getPost(id, res) {
-        const post = await this.postsQueryRepository.findPostById(id);
+    async getPost(req, id, res) {
+        const isToken = { token: null };
+        if (!req.headers.authorization)
+            isToken.token = null;
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1];
+            const result = await this.authService.getTokenInfo(token);
+            isToken.token = result.userId;
+        }
+        const post = await this.postsQueryRepository.findPostById(id, isToken.token);
         if (!post) {
             return res.sendStatus(404);
         }
@@ -58,12 +74,20 @@ let PostsController = class PostsController {
         }
         return res.sendStatus(204);
     }
-    async getComments(postId, paginationQuery, res) {
+    async getComments(req, postId, paginationQuery, res) {
+        const isToken = { token: null };
+        if (!req.headers.authorization)
+            isToken.token = null;
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1];
+            const result = await this.authService.getTokenInfo(token);
+            isToken.token = result.userId;
+        }
         const foundPost = await this.postsQueryRepository.findPostById(postId);
         if (!foundPost) {
             return res.sendStatus(404);
         }
-        const returnedComments = await this.commentsQueryRepository.getAllCommentsForPost(paginationQuery, postId);
+        const returnedComments = await this.commentsQueryRepository.getAllCommentsForPost(paginationQuery, postId, isToken.token);
         return res.send(returnedComments);
     }
     async createComment(req, postId, inputModel, res) {
@@ -72,20 +96,28 @@ let PostsController = class PostsController {
             return res.sendStatus(404);
         return res.status(201).send(newComment);
     }
+    async likePost(req, postId, inputModel, res) {
+        const isLiked = await this.postsService.likePost(postId, inputModel.likeStatus, req.user);
+        if (!isLiked)
+            return res.sendStatus(404);
+        return res.sendStatus(204);
+    }
 };
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPosts", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Res)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPost", null);
 __decorate([
@@ -117,11 +149,12 @@ __decorate([
 ], PostsController.prototype, "deletePost", null);
 __decorate([
     (0, common_1.Get)(':id/comments'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Query)()),
-    __param(2, (0, common_1.Res)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Query)()),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [Object, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getComments", null);
 __decorate([
@@ -132,15 +165,26 @@ __decorate([
     __param(2, (0, common_1.Body)()),
     __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, comments_schema_1.createCommentModel, Object]),
+    __metadata("design:paramtypes", [Object, String, comments_schema_1.CreateCommentModel, Object]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "createComment", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Put)('/:id/like-status'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, comments_schema_1.LikeInputModel, Object]),
+    __metadata("design:returntype", Promise)
+], PostsController.prototype, "likePost", null);
 PostsController = __decorate([
     (0, common_1.Controller)('posts'),
-    __metadata("design:paramtypes", [posts_service_1.PostsService,
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        posts_service_1.PostsService,
         posts_query_repo_1.PostsQueryRepository,
-        comments_query_repo_1.CommentsQueryRepository,
-        comments_service_1.CommentsService])
+        comments_query_repo_1.CommentsQueryRepository])
 ], PostsController);
 exports.PostsController = PostsController;
 //# sourceMappingURL=posts.controller.js.map

@@ -1,7 +1,7 @@
 import mongoose, { HydratedDocument } from 'mongoose';
 export type CommentDocument = HydratedDocument<Comment>;
 export declare class LikingUsers {
-    _id: mongoose.Schema.Types.ObjectId;
+    id: string;
     myStatus: string;
 }
 export declare class LikesInfo {
@@ -17,16 +17,18 @@ export declare class Comment {
     content: string;
     commentatorInfo: CommentatorModel;
     createdAt: string;
-    likingUsers: LikingUsers[];
+    likingUsers: [LikingUsers];
     postId: string;
     likesInfo: LikesInfo;
 }
 export declare const CommentSchema: mongoose.Schema<Comment, mongoose.Model<Comment, any, any, any, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, Comment>;
-export declare class createCommentModel {
+export declare class CreateCommentModel {
     content: string;
-    constructor(content: string);
 }
-export declare class commentViewModel {
+export declare class LikeInputModel {
+    likeStatus: string;
+}
+export declare class CommentViewModel {
     id: string;
     content: string;
     commentatorInfo: {

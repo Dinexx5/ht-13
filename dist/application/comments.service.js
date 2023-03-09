@@ -24,6 +24,7 @@ let CommentsService = class CommentsService {
         this.commentsRepository = commentsRepository;
         this.usersRepository = usersRepository;
         this.commentModel = commentModel;
+        this.filter = { status: '204' };
     }
     async createComment(postId, inputModel, userId) {
         const userInstance = await this.usersRepository.findUserById(userId);
@@ -58,6 +59,96 @@ let CommentsService = class CommentsService {
                 myStatus: 'None',
             },
         };
+    }
+    async updateCommentById(commentId, inputModel, userId) {
+        const _id = new mongoose_2.default.Types.ObjectId(commentId);
+        const commentInstance = await this.commentsRepository.findComment(_id);
+        if (!commentInstance) {
+            this.filter.status = '404';
+            return this.filter.status;
+        }
+        if (commentInstance.commentatorInfo.userId !== userId.toString()) {
+            this.filter.status = '403';
+            return this.filter.status;
+        }
+        commentInstance.content = inputModel.content;
+        await this.commentsRepository.save(commentInstance);
+        return this.filter.status;
+    }
+    async deleteCommentById(commentId, userId) {
+        const _id = new mongoose_2.default.Types.ObjectId(commentId);
+        const commentInstance = await this.commentsRepository.findComment(_id);
+        if (!commentInstance) {
+            this.filter.status = '404';
+            return this.filter.status;
+        }
+        if (commentInstance.commentatorInfo.userId !== userId.toString()) {
+            this.filter.status = '403';
+            return this.filter.status;
+        }
+        await commentInstance.deleteOne();
+        return this.filter.status;
+    }
+    async likeComment(commentId, likeStatus, userId) {
+        const _id = new mongoose_2.default.Types.ObjectId(commentId);
+        const commentInstance = await this.commentsRepository.findComment(_id);
+        console.log(commentInstance);
+        if (!commentInstance) {
+            return false;
+        }
+        const callback = (user) => user.id === userId.toString();
+        const isUserLikedBefore = commentInstance.likingUsers.find(callback);
+        if (!isUserLikedBefore) {
+            commentInstance.likingUsers.push({ id: userId.toString(), myStatus: 'None' });
+        }
+        const indexOfUser = commentInstance.likingUsers.findIndex(callback);
+        debugger;
+        const myStatus = commentInstance.likingUsers.find(callback).myStatus;
+        switch (likeStatus) {
+            case 'Like':
+                if (myStatus === 'Like') {
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'Like';
+                }
+                if (myStatus === 'None') {
+                    ++commentInstance.likesInfo.likesCount;
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'Like';
+                }
+                if (myStatus === 'Dislike') {
+                    --commentInstance.likesInfo.dislikesCount;
+                    ++commentInstance.likesInfo.likesCount;
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'Like';
+                }
+                break;
+            case 'Dislike':
+                if (myStatus === 'Like') {
+                    --commentInstance.likesInfo.likesCount;
+                    ++commentInstance.likesInfo.dislikesCount;
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'Dislike';
+                }
+                if (myStatus === 'None') {
+                    ++commentInstance.likesInfo.dislikesCount;
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'Dislike';
+                }
+                if (myStatus === 'Dislike') {
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'Dislike';
+                }
+                break;
+            case 'None':
+                if (myStatus === 'Like') {
+                    --commentInstance.likesInfo.likesCount;
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'None';
+                }
+                if (myStatus === 'Dislike') {
+                    --commentInstance.likesInfo.dislikesCount;
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'None';
+                }
+                if (myStatus === 'None') {
+                    commentInstance.likingUsers[indexOfUser].myStatus = 'None';
+                }
+                break;
+        }
+        await this.commentsRepository.save(commentInstance);
+        return true;
     }
 };
 CommentsService = __decorate([

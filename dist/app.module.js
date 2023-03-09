@@ -32,6 +32,7 @@ const auth_module_1 = require("./auth/auth.module");
 const auth_controller_1 = require("./controllers/auth.controller");
 const comments_repository_1 = require("./repos/comments.repository");
 const comments_service_1 = require("./application/comments.service");
+const devices_controller_1 = require("./controllers/devices.controller");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -53,6 +54,7 @@ AppModule = __decorate([
             posts_controller_1.PostsController,
             comments_controller_1.CommentsController,
             testing_controller_1.TestingController,
+            devices_controller_1.DevicesController,
         ],
         providers: [
             app_service_1.AppService,

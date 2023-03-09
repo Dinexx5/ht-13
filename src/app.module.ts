@@ -23,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthController } from './controllers/auth.controller';
 import { CommentsRepository } from './repos/comments.repository';
 import { CommentsService } from './application/comments.service';
+import { DevicesController } from './controllers/devices.controller';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CommentsService } from './application/comments.service';
     PostsController,
     CommentsController,
     TestingController,
+    DevicesController,
   ],
   providers: [
     AppService,

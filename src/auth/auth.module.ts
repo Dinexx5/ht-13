@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AccessJwtStrategy } from './strategies/access.jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { UsersModule } from '../users.module';
-import { jwtConstants } from './constants';
 import { AuthService } from './auth-service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from '../domain/token.schema';
@@ -20,15 +19,12 @@ import { EmailAdapter } from '../adapters/email.adapter';
     MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '6000s' },
-    }),
+    JwtModule.register({}),
   ],
   providers: [
     AuthService,
     LocalStrategy,
-    JwtStrategy,
+    AccessJwtStrategy,
     TokenRepository,
     DevicesService,
     DevicesRepository,

@@ -6,7 +6,7 @@ export type CommentDocument = HydratedDocument<Comment>;
 @Schema()
 export class LikingUsers {
   @Prop()
-  _id: mongoose.Schema.Types.ObjectId;
+  id: string;
   @Prop()
   myStatus: string;
 }
@@ -38,7 +38,7 @@ export class Comment {
   @Prop()
   createdAt: string;
   @Prop()
-  likingUsers: LikingUsers[];
+  likingUsers: [LikingUsers];
   @Prop()
   postId: string;
   @Prop()
@@ -47,11 +47,14 @@ export class Comment {
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
-export class createCommentModel {
+export class CreateCommentModel {
   content: string;
 }
+export class LikeInputModel {
+  likeStatus: string;
+}
 
-export class commentViewModel {
+export class CommentViewModel {
   constructor(
     public id: string,
     public content: string,

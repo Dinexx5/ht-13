@@ -8,10 +8,13 @@ import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { TokenRepository } from '../repos/token.repository';
 import { DevicesService } from '../application/devices.service';
-import { createUserModel, newPasswordModel, UserDocument } from '../domain/users.schema';
+import { createUserModel, newPasswordModel } from '../domain/users.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { EmailAdapter } from '../adapters/email.adapter';
+import { Device, DeviceDocument } from '../domain/devices.schema';
+import { DevicesRepository } from '../repos/devices.repository';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +24,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     protected tokenRepository: TokenRepository,
     protected devicesService: DevicesService,
+    protected devicesRepository: DevicesRepository,
     @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
+    @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -34,7 +39,12 @@ export class AuthService {
 
   async createJwtAccessToken(userId: ObjectId) {
     const payload = { userId: userId };
-    return this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      secret: jwtConstants.secret,
+      expiresIn: '6000s',
+    });
+    console.log(accessToken);
+    return accessToken;
   }
   async createJwtRefreshToken(
     userId: mongoose.Schema.Types.ObjectId,
@@ -43,8 +53,11 @@ export class AuthService {
   ) {
     const deviceId = new Date().toISOString();
     const payload = { userId: userId, deviceId: deviceId };
-    const refreshToken = this.jwtService.sign(payload);
-    const result = this.jwtService.verify(refreshToken);
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: jwtConstants.secret,
+      expiresIn: '6000s',
+    });
+    const result = this.jwtService.verify(refreshToken, { secret: jwtConstants.secret });
     const issuedAt = new Date(result.iat * 1000).toISOString();
     const expiredAt = new Date(result.exp * 1000).toISOString();
     const tokenMetaDTO = {
@@ -62,7 +75,7 @@ export class AuthService {
     return refreshToken;
   }
   async updateJwtRefreshToken(refreshToken: string) {
-    const result: any = await this.getRefreshTokenInfo(refreshToken);
+    const result: any = await this.getTokenInfo(refreshToken);
     const { deviceId, userId, exp } = result;
     const previousExpirationDate = new Date(exp * 1000).toISOString();
     const tokenInstance: TokenDocument = await this.tokenRepository.findToken(
@@ -71,7 +84,7 @@ export class AuthService {
     if (!tokenInstance) throw new UnauthorizedException();
     const newPayload = { userId: userId, deviceId: deviceId };
     const newRefreshToken = this.jwtService.sign(newPayload);
-    const newResult: any = await this.getRefreshTokenInfo(newRefreshToken);
+    const newResult: any = await this.getTokenInfo(newRefreshToken);
     const newIssuedAt = new Date(newResult.iat * 1000).toISOString();
     const newExpiredAt = new Date(newResult.exp * 1000).toISOString();
     tokenInstance.expiredAt = newExpiredAt;
@@ -79,25 +92,30 @@ export class AuthService {
     await this.tokenRepository.save(tokenInstance);
     return newRefreshToken;
   }
-  async getRefreshTokenInfo(token: string) {
+  async getTokenInfo(token: string) {
     try {
-      const result: any = this.jwtService.verify(token);
+      const result: any = this.jwtService.verify(token, { secret: jwtConstants.secret });
       return result;
     } catch (error) {
       return null;
     }
   }
-  async deleteSession(token: string) {
-    const result: any = await this.getRefreshTokenInfo(token);
+  async deleteCurrentToken(token: string) {
+    const result: any = await this.getTokenInfo(token);
     const expirationDate = new Date(result.exp * 1000).toISOString();
     const tokenInstance: TokenDocument = await this.tokenRepository.findToken(expirationDate);
     if (!tokenInstance) throw new UnauthorizedException();
     await tokenInstance.deleteOne();
   }
-  async deleteDevice(token: string) {
-    const result: any = await this.getRefreshTokenInfo(token);
+  async deleteDeviceForLogout(token: string) {
+    const result: any = await this.getTokenInfo(token);
     const deviceId = result.deviceId;
-    await this.devicesService.deleteDevice(deviceId);
+    const deviceInstance = await this.devicesRepository.findDeviceById(deviceId);
+    await deviceInstance.deleteOne();
+  }
+  async deleteAllSessionsWithoutActive(refreshToken: string, userId: mongoose.Types.ObjectId) {
+    const result = await this.getTokenInfo(refreshToken);
+    await this.devicesRepository.deleteAllSessionsWithoutActive(result.deviceId, userId);
   }
   async createUser(inputModel: createUserModel) {
     const passwordHash = await this.usersService.generateHash(inputModel.password);

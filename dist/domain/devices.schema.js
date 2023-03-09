@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createDeviceModel = exports.DeviceSchema = exports.Device = void 0;
+exports.deviceViewModel = exports.createDeviceModel = exports.DeviceSchema = exports.Device = void 0;
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 let Device = class Device {
@@ -46,4 +46,7 @@ exports.DeviceSchema = mongoose_2.SchemaFactory.createForClass(Device);
 class createDeviceModel {
 }
 exports.createDeviceModel = createDeviceModel;
+class deviceViewModel {
+}
+exports.deviceViewModel = deviceViewModel;
 //# sourceMappingURL=devices.schema.js.map
