@@ -12,9 +12,7 @@ const common_1 = require("@nestjs/common");
 let IsLikeStatusCorrectDecorator = class IsLikeStatusCorrectDecorator {
     async validate(likeStatus, args) {
         const correctStatuses = ['None', 'Like', 'Dislike'];
-        console.log(likeStatus);
         const isCorrect = correctStatuses.includes(likeStatus);
-        console.log(isCorrect);
         if (!isCorrect) {
             return false;
         }

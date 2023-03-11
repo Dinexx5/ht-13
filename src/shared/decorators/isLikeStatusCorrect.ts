@@ -12,9 +12,7 @@ import { Injectable } from '@nestjs/common';
 export class IsLikeStatusCorrectDecorator implements ValidatorConstraintInterface {
   async validate(likeStatus: string, args: ValidationArguments) {
     const correctStatuses = ['None', 'Like', 'Dislike'];
-    console.log(likeStatus);
     const isCorrect = correctStatuses.includes(likeStatus);
-    console.log(isCorrect);
     if (!isCorrect) {
       return false;
     }

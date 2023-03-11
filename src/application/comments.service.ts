@@ -154,6 +154,8 @@ export class CommentsService {
         }
         break;
     }
+    console.log(commentInstance);
+    commentInstance.markModified('likingUsers');
     await this.commentsRepository.save(commentInstance);
     return true;
   }

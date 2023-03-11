@@ -121,16 +121,19 @@ let PostsService = class PostsService {
         const userInstance = await this.usersRepository.findUserById(userId);
         const login = userInstance.accountData.login;
         const postInstance = await this.postsRepository.findPostInstance(_id);
+        console.log(postInstance);
         if (!postInstance) {
             return false;
         }
-        const callback = (user) => user.id === userId.toString();
-        const isUserLikedBefore = postInstance.likingUsers.find(callback);
+        const callbackForUser = (user) => user.id === userId.toString();
+        const callbackForLike = (user) => user.userId === userId.toString();
+        const isUserLikedBefore = postInstance.likingUsers.find(callbackForUser);
         if (!isUserLikedBefore) {
             postInstance.likingUsers.push({ id: userId.toString(), myStatus: 'None' });
         }
-        const indexOfUser = postInstance.likingUsers.findIndex(callback);
-        const myStatus = postInstance.likingUsers.find(callback).myStatus;
+        const indexOfUser = postInstance.likingUsers.findIndex(callbackForUser);
+        const indexOfLike = postInstance.likes.findIndex(callbackForLike);
+        const myStatus = postInstance.likingUsers.find(callbackForUser).myStatus;
         switch (likeStatus) {
             case 'Like':
                 if (myStatus === 'Like') {
@@ -161,11 +164,7 @@ let PostsService = class PostsService {
                     --postInstance.extendedLikesInfo.likesCount;
                     ++postInstance.extendedLikesInfo.dislikesCount;
                     postInstance.likingUsers[indexOfUser].myStatus = 'Dislike';
-                    postInstance.likes.push({
-                        addedAt: new Date().toISOString(),
-                        userId: userId.toString(),
-                        login: login,
-                    });
+                    postInstance.likes.splice(indexOfLike, 1);
                 }
                 if (myStatus === 'None') {
                     ++postInstance.extendedLikesInfo.dislikesCount;
@@ -179,11 +178,7 @@ let PostsService = class PostsService {
                 if (myStatus === 'Like') {
                     --postInstance.extendedLikesInfo.likesCount;
                     postInstance.likingUsers[indexOfUser].myStatus = 'None';
-                    postInstance.likes.push({
-                        addedAt: new Date().toISOString(),
-                        userId: userId.toString(),
-                        login: login,
-                    });
+                    postInstance.likes.splice(indexOfLike, 1);
                 }
                 if (myStatus === 'Dislike') {
                     --postInstance.extendedLikesInfo.dislikesCount;
@@ -194,6 +189,8 @@ let PostsService = class PostsService {
                 }
                 break;
         }
+        console.log(postInstance);
+        postInstance.markModified('likingUsers');
         await this.postsRepository.save(postInstance);
         return true;
     }
