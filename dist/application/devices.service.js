@@ -70,6 +70,7 @@ let DevicesService = class DevicesService {
     }
     async deleteSessionById(userId, deviceId) {
         const foundDevice = await this.devicesRepository.findSessionByDeviceId(deviceId);
+        console.log(foundDevice);
         if (!foundDevice) {
             this.filter.status = '404';
             return this.filter.status;
@@ -79,6 +80,7 @@ let DevicesService = class DevicesService {
             return this.filter.status;
         }
         await foundDevice.deleteOne();
+        this.filter.status = '204';
         return this.filter.status;
     }
 };

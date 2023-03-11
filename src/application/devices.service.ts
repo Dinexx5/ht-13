@@ -40,6 +40,7 @@ export class DevicesService {
   }
   async deleteSessionById(userId: mongoose.Types.ObjectId, deviceId: string) {
     const foundDevice = await this.devicesRepository.findSessionByDeviceId(deviceId);
+    console.log(foundDevice);
     if (!foundDevice) {
       this.filter.status = '404';
       return this.filter.status;
@@ -49,6 +50,7 @@ export class DevicesService {
       return this.filter.status;
     }
     await foundDevice.deleteOne();
+    this.filter.status = '204';
     return this.filter.status;
   }
 }

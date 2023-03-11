@@ -13,7 +13,6 @@ exports.authModel = exports.NewPasswordModel = exports.ConfirmEmailModel = expor
 const class_validator_1 = require("class-validator");
 const isLoginExists_decorator_1 = require("../shared/decorators/isLoginExists.decorator");
 const isEmailExists_decorator_1 = require("../shared/decorators/isEmailExists.decorator");
-const emailResendinfDecorator_1 = require("../shared/decorators/emailResendinfDecorator");
 const isCodeCorrect_decorator_1 = require("../shared/decorators/isCodeCorrect.decorator");
 const class_transformer_1 = require("class-transformer");
 const recoveryCode_decorator_1 = require("../shared/decorators/recoveryCode.decorator");
@@ -44,7 +43,6 @@ class ResendEmailModel {
 }
 __decorate([
     (0, class_validator_1.IsEmail)(),
-    (0, emailResendinfDecorator_1.IsEmailConfirmed)(),
     __metadata("design:type", String)
 ], ResendEmailModel.prototype, "email", void 0);
 exports.ResendEmailModel = ResendEmailModel;

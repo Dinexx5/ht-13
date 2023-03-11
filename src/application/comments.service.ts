@@ -74,6 +74,7 @@ export class CommentsService {
     }
     commentInstance.content = inputModel.content;
     await this.commentsRepository.save(commentInstance);
+    this.filter.status = '204';
     return this.filter.status;
   }
 
@@ -89,6 +90,7 @@ export class CommentsService {
       return this.filter.status;
     }
     await commentInstance.deleteOne();
+    this.filter.status = '204';
     return this.filter.status;
   }
   async likeComment(

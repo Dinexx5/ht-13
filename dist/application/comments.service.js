@@ -96,6 +96,7 @@ let CommentsService = class CommentsService {
         }
         commentInstance.content = inputModel.content;
         await this.commentsRepository.save(commentInstance);
+        this.filter.status = '204';
         return this.filter.status;
     }
     async deleteCommentById(commentId, userId) {
@@ -110,6 +111,7 @@ let CommentsService = class CommentsService {
             return this.filter.status;
         }
         await commentInstance.deleteOne();
+        this.filter.status = '204';
         return this.filter.status;
     }
     async likeComment(commentId, likeStatus, userId) {

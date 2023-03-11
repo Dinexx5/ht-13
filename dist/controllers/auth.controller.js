@@ -80,6 +80,9 @@ let AuthController = class AuthController {
         return res.sendStatus(204);
     }
     async recoverPassword(inputModel, res) {
+        const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
+        if (!isEmailSent)
+            return res.status(204).send('something went wrong');
         return res.sendStatus(204);
     }
     async newPassword(inputModel, res) {

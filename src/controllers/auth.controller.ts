@@ -97,8 +97,8 @@ export class AuthController {
   @UseGuards(RateLimitGuard)
   @Post('password-recovery')
   async recoverPassword(@Body() inputModel: PasswordRecoveryModel, @Res() res: Response) {
-    // const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
-    // if (!isEmailSent) return res.status(204).send('something went wrong');
+    const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
+    if (!isEmailSent) return res.status(204).send('something went wrong');
     return res.sendStatus(204);
   }
 
