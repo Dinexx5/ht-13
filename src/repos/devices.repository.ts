@@ -11,7 +11,7 @@ export class DevicesRepository {
     return this.deviceModel.findOne({ deviceId: deviceId });
   }
   async findSessions(userId: mongoose.Types.ObjectId) {
-    return this.deviceModel.find({ userId: userId }).lean();
+    return this.deviceModel.find({ userId: userId });
   }
   async deleteAllSessionsWithoutActive(deviceId: string, userId: mongoose.Types.ObjectId) {
     await this.deviceModel.deleteMany({

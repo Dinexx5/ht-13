@@ -8,11 +8,11 @@ export declare class DevicesRepository {
     }>, never> & Required<{
         _id: mongoose.Schema.Types.ObjectId;
     }>>;
-    findSessions(userId: mongoose.Types.ObjectId): Promise<mongoose.LeanDocument<mongoose.Document<unknown, any, Device> & Omit<Device & Required<{
+    findSessions(userId: mongoose.Types.ObjectId): Promise<(mongoose.Document<unknown, any, Device> & Omit<Device & Required<{
         _id: mongoose.Schema.Types.ObjectId;
     }>, never> & Required<{
         _id: mongoose.Schema.Types.ObjectId;
-    }>>[]>;
+    }>)[]>;
     deleteAllSessionsWithoutActive(deviceId: string, userId: mongoose.Types.ObjectId): Promise<void>;
     findSessionByDeviceId(deviceId: string): Promise<mongoose.Document<unknown, any, Device> & Omit<Device & Required<{
         _id: mongoose.Schema.Types.ObjectId;

@@ -34,7 +34,7 @@ export class DevicesController {
   @Delete(':id')
   async deleteSession(@Request() req, @Param('id') deviceId: string, @Res() res: Response) {
     const userId = new mongoose.Types.ObjectId(req.user.userId);
-    const status = await this.devicesService.deleteSessionById(userId, req.user.deviceId);
+    const status = await this.devicesService.deleteSessionById(userId, deviceId);
     return res.sendStatus(+status);
   }
 }

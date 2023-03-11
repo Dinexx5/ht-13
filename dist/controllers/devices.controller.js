@@ -40,7 +40,7 @@ let DevicesController = class DevicesController {
     }
     async deleteSession(req, deviceId, res) {
         const userId = new mongoose_1.default.Types.ObjectId(req.user.userId);
-        const status = await this.devicesService.deleteSessionById(userId, req.user.deviceId);
+        const status = await this.devicesService.deleteSessionById(userId, deviceId);
         return res.sendStatus(+status);
     }
 };

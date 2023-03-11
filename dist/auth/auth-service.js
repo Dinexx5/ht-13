@@ -118,6 +118,9 @@ let AuthService = class AuthService {
         tokenInstance.expiredAt = newExpiredAt;
         tokenInstance.issuedAt = newIssuedAt;
         await this.tokenRepository.save(tokenInstance);
+        const deviceInstance = await this.devicesRepository.findSessionByDeviceId(deviceId);
+        deviceInstance.lastActiveDate = newIssuedAt;
+        await this.devicesRepository.save(deviceInstance);
         return newRefreshToken;
     }
     async getTokenInfo(token) {
