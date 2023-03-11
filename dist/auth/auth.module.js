@@ -21,6 +21,7 @@ const devices_schema_1 = require("../domain/devices.schema");
 const devices_service_1 = require("../application/devices.service");
 const devices_repository_1 = require("../repos/devices.repository");
 const email_adapter_1 = require("../adapters/email.adapter");
+const refresh_jwt_strategy_1 = require("./strategies/refresh.jwt.strategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -36,6 +37,7 @@ AuthModule = __decorate([
             auth_service_1.AuthService,
             local_strategy_1.LocalStrategy,
             access_jwt_strategy_1.AccessJwtStrategy,
+            refresh_jwt_strategy_1.RefreshJwtStrategy,
             token_repository_1.TokenRepository,
             devices_service_1.DevicesService,
             devices_repository_1.DevicesRepository,

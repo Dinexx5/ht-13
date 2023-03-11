@@ -72,11 +72,6 @@ let AuthService = class AuthService {
             return null;
         return user._id;
     }
-    async getUserByRefreshToken(token) {
-        const result = await this.jwtService.verify(token, { secret: constants_1.jwtConstants.secret });
-        const userId = new mongoose_1.default.Types.ObjectId(result.userId);
-        return userId;
-    }
     async createJwtAccessToken(userId) {
         const payload = { userId: userId.toString() };
         const accessToken = this.jwtService.sign(payload, {
@@ -109,13 +104,9 @@ let AuthService = class AuthService {
         await this.devicesService.createDevice(userId, ip, deviceName, deviceId, issuedAt);
         return refreshToken;
     }
-    async updateJwtRefreshToken(refreshToken) {
-        const result = await this.getTokenInfo(refreshToken);
-        const { deviceId, userId, exp } = result;
+    async updateJwtRefreshToken(deviceId, exp, userId) {
         const previousExpirationDate = new Date(exp * 1000).toISOString();
         const tokenInstance = await this.tokenRepository.findToken(previousExpirationDate);
-        if (!tokenInstance)
-            throw new common_1.UnauthorizedException();
         const newPayload = { userId: userId, deviceId: deviceId };
         const newRefreshToken = this.jwtService.sign(newPayload, {
             secret: constants_1.jwtConstants.secret,
@@ -153,10 +144,6 @@ let AuthService = class AuthService {
         const deviceId = result.deviceId;
         const deviceInstance = await this.devicesRepository.findDeviceById(deviceId);
         await deviceInstance.deleteOne();
-    }
-    async deleteAllSessionsWithoutActive(refreshToken, userId) {
-        const result = await this.getTokenInfo(refreshToken);
-        await this.devicesRepository.deleteAllSessionsWithoutActive(result.deviceId, userId);
     }
     async createUser(inputModel) {
         const passwordHash = await this.usersService.generateHash(inputModel.password);

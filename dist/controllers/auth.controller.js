@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,6 +23,8 @@ const local_auth_guard_1 = require("../auth/guards/local-auth.guard");
 const users_repository_1 = require("../repos/users.repository");
 const userModels_1 = require("../models/userModels");
 const rate_limit_guard_1 = require("../auth/guards/rate-limit.guard");
+const jwt_refresh_guard_1 = require("../auth/guards/jwt-refresh.guard");
+const mongoose_1 = __importDefault(require("mongoose"));
 let AuthController = class AuthController {
     constructor(authService, usersRepository) {
         this.authService = authService;
@@ -46,22 +51,18 @@ let AuthController = class AuthController {
         });
     }
     async getRefreshToken(req, res) {
-        const refreshToken = req.cookies.refreshToken;
-        if (!refreshToken)
-            throw new common_1.UnauthorizedException();
-        const userId = await this.authService.getUserByRefreshToken(refreshToken);
+        const { deviceId, exp } = req.user;
+        const userId = new mongoose_1.default.Types.ObjectId(req.user.userId);
         const newAccessToken = await this.authService.createJwtAccessToken(userId);
-        const newRefreshToken = await this.authService.updateJwtRefreshToken(refreshToken);
+        const newRefreshToken = await this.authService.updateJwtRefreshToken(deviceId, exp, userId);
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
             secure: true,
         });
-        res.json({ accessToken: newAccessToken });
+        res.status(200).json({ accessToken: newAccessToken });
     }
     async deleteCurrentSession(req, res) {
         const refreshToken = req.cookies.refreshToken;
-        if (!refreshToken)
-            throw new common_1.UnauthorizedException();
         await this.authService.deleteCurrentToken(refreshToken);
         await this.authService.deleteDeviceForLogout(refreshToken);
         return res.sendStatus(204);
@@ -107,6 +108,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getProfile", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_refresh_guard_1.JwtRefreshAuthGuard),
     (0, common_1.Post)('refresh-token'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),
@@ -115,6 +117,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getRefreshToken", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_refresh_guard_1.JwtRefreshAuthGuard),
     (0, common_1.Post)('logout'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),

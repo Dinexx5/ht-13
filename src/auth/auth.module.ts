@@ -12,6 +12,7 @@ import { Device, DeviceSchema } from '../domain/devices.schema';
 import { DevicesService } from '../application/devices.service';
 import { DevicesRepository } from '../repos/devices.repository';
 import { EmailAdapter } from '../adapters/email.adapter';
+import { RefreshJwtStrategy } from './strategies/refresh.jwt.strategy';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { EmailAdapter } from '../adapters/email.adapter';
     AuthService,
     LocalStrategy,
     AccessJwtStrategy,
+    RefreshJwtStrategy,
     TokenRepository,
     DevicesService,
     DevicesRepository,

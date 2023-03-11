@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Request,
-  Res,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth/auth-service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
@@ -22,6 +13,8 @@ import {
   ResendEmailModel,
 } from '../models/userModels';
 import { RateLimitGuard } from '../auth/guards/rate-limit.guard';
+import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh.guard';
+import mongoose from 'mongoose';
 
 @Controller('auth')
 export class AuthController {
@@ -55,25 +48,23 @@ export class AuthController {
       userId: userInstance._id.toString(),
     });
   }
-
+  @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh-token')
   async getRefreshToken(@Request() req, @Res() res: Response) {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) throw new UnauthorizedException();
-    const userId = await this.authService.getUserByRefreshToken(refreshToken);
+    const { deviceId, exp } = req.user;
+    const userId = new mongoose.Types.ObjectId(req.user.userId);
     const newAccessToken = await this.authService.createJwtAccessToken(userId);
-    const newRefreshToken = await this.authService.updateJwtRefreshToken(refreshToken);
+    const newRefreshToken = await this.authService.updateJwtRefreshToken(deviceId, exp, userId);
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: true,
     });
-    res.json({ accessToken: newAccessToken });
+    res.status(200).json({ accessToken: newAccessToken });
   }
-
+  @UseGuards(JwtRefreshAuthGuard)
   @Post('logout')
   async deleteCurrentSession(@Request() req, @Res() res: Response) {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) throw new UnauthorizedException();
     await this.authService.deleteCurrentToken(refreshToken);
     await this.authService.deleteDeviceForLogout(refreshToken);
     return res.sendStatus(204);

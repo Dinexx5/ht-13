@@ -19,14 +19,12 @@ export declare class AuthService {
     private deviceModel;
     constructor(emailAdapter: EmailAdapter, usersService: UsersService, jwtService: JwtService, tokenRepository: TokenRepository, devicesService: DevicesService, devicesRepository: DevicesRepository, tokenModel: Model<TokenDocument>, deviceModel: Model<DeviceDocument>);
     validateUser(username: string, password: string): Promise<any>;
-    getUserByRefreshToken(token: string): Promise<mongoose.Types.ObjectId>;
     createJwtAccessToken(userId: mongoose.Types.ObjectId): Promise<string>;
     createJwtRefreshToken(userId: mongoose.Schema.Types.ObjectId, deviceName: string, ip: string): Promise<string>;
-    updateJwtRefreshToken(refreshToken: string): Promise<string>;
+    updateJwtRefreshToken(deviceId: string, exp: number, userId: mongoose.Types.ObjectId): Promise<string>;
     getTokenInfo(token: string): Promise<any>;
     deleteCurrentToken(token: string): Promise<void>;
     deleteDeviceForLogout(token: string): Promise<void>;
-    deleteAllSessionsWithoutActive(refreshToken: string, userId: mongoose.Types.ObjectId): Promise<void>;
     createUser(inputModel: CreateUserModel): Promise<mongoose.Document<unknown, any, import("../domain/users.schema").User> & Omit<import("../domain/users.schema").User & Required<{
         _id: mongoose.Schema.Types.ObjectId;
     }>, never>>;
