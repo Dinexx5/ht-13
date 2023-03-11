@@ -23,6 +23,8 @@ export class UsersQueryRepository {
       searchLoginTerm = null,
       searchEmailTerm = null,
     } = query;
+    const sortByFilter = `accountData.${sortBy}`;
+    console.log(sortByFilter);
     const sortDirectionInt: 1 | -1 = sortDirection === 'desc' ? -1 : 1;
     const skippedUsersCount = (+pageNumber - 1) * +pageSize;
 
@@ -50,10 +52,9 @@ export class UsersQueryRepository {
     const countAll = await this.userModel.countDocuments(filter);
     const usersDb = await this.userModel
       .find(filter)
-      .sort({ [sortBy]: sortDirectionInt })
+      .sort({ [sortByFilter]: sortDirectionInt })
       .skip(skippedUsersCount)
-      .limit(+pageSize)
-      .lean();
+      .limit(+pageSize);
 
     const usersView = usersDb.map(mapDbUserToUserViewModel);
     return {

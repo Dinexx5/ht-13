@@ -30,6 +30,8 @@ let UsersQueryRepository = class UsersQueryRepository {
     }
     async getAllUsers(query) {
         const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10, searchLoginTerm = null, searchEmailTerm = null, } = query;
+        const sortByFilter = `accountData.${sortBy}`;
+        console.log(sortByFilter);
         const sortDirectionInt = sortDirection === 'desc' ? -1 : 1;
         const skippedUsersCount = (+pageNumber - 1) * +pageSize;
         const filter = {};
@@ -48,10 +50,9 @@ let UsersQueryRepository = class UsersQueryRepository {
         const countAll = await this.userModel.countDocuments(filter);
         const usersDb = await this.userModel
             .find(filter)
-            .sort({ [sortBy]: sortDirectionInt })
+            .sort({ [sortByFilter]: sortDirectionInt })
             .skip(skippedUsersCount)
-            .limit(+pageSize)
-            .lean();
+            .limit(+pageSize);
         const usersView = usersDb.map(mapDbUserToUserViewModel);
         return {
             pagesCount: Math.ceil(countAll / +pageSize),
