@@ -12,6 +12,7 @@ import {
 import { BlogsQueryRepository } from '../repos/blogs.query-repo';
 import { CommentViewModel, CreateCommentModel, LikingUsers } from '../domain/comments.schema';
 import { CommentsService } from './comments.service';
+import { UsersRepository } from '../repos/users.repository';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +20,7 @@ export class PostsService {
     protected postsRepository: PostsRepository,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected commentsService: CommentsService,
+    protected usersRepository: UsersRepository,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
   ) {}
 
@@ -95,6 +97,8 @@ export class PostsService {
     userId: mongoose.Types.ObjectId,
   ): Promise<boolean> {
     const _id = new mongoose.Types.ObjectId(postId);
+    const userInstance = await this.usersRepository.findUserById(userId);
+    const login = userInstance.accountData.login;
     const postInstance = await this.postsRepository.findPostInstance(_id);
     if (!postInstance) {
       return false;
@@ -103,7 +107,6 @@ export class PostsService {
     const isUserLikedBefore = postInstance.likingUsers.find(callback);
     if (!isUserLikedBefore) {
       postInstance.likingUsers.push({ id: userId.toString(), myStatus: 'None' });
-      // await this.postsRepository.save(postsInstance);
     }
     const indexOfUser = postInstance.likingUsers.findIndex(callback);
     const myStatus = postInstance.likingUsers.find(callback)!.myStatus;
@@ -115,11 +118,21 @@ export class PostsService {
         if (myStatus === 'None') {
           ++postInstance!.extendedLikesInfo.likesCount;
           postInstance.likingUsers[indexOfUser].myStatus = 'Like';
+          postInstance.likes.push({
+            addedAt: new Date().toISOString(),
+            userId: userId.toString(),
+            login: login,
+          });
         }
         if (myStatus === 'Dislike') {
           --postInstance!.extendedLikesInfo.dislikesCount;
           ++postInstance!.extendedLikesInfo.likesCount;
           postInstance.likingUsers[indexOfUser].myStatus = 'Like';
+          postInstance.likes.push({
+            addedAt: new Date().toISOString(),
+            userId: userId.toString(),
+            login: login,
+          });
         }
         break;
       case 'Dislike':
@@ -127,6 +140,11 @@ export class PostsService {
           --postInstance!.extendedLikesInfo.likesCount;
           ++postInstance!.extendedLikesInfo.dislikesCount;
           postInstance.likingUsers[indexOfUser].myStatus = 'Dislike';
+          postInstance.likes.push({
+            addedAt: new Date().toISOString(),
+            userId: userId.toString(),
+            login: login,
+          });
         }
         if (myStatus === 'None') {
           ++postInstance!.extendedLikesInfo.dislikesCount;
@@ -140,6 +158,11 @@ export class PostsService {
         if (myStatus === 'Like') {
           --postInstance!.extendedLikesInfo.likesCount;
           postInstance.likingUsers[indexOfUser].myStatus = 'None';
+          postInstance.likes.push({
+            addedAt: new Date().toISOString(),
+            userId: userId.toString(),
+            login: login,
+          });
         }
         if (myStatus === 'Dislike') {
           --postInstance!.extendedLikesInfo.dislikesCount;

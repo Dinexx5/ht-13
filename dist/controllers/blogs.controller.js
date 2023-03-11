@@ -62,7 +62,7 @@ let BlogsController = class BlogsController {
         const post = await this.postsService.createPost(postDto);
         if (!post)
             return res.sendStatus(404);
-        return post;
+        return res.send(post);
     }
     async getPosts(blogId, paginationQuery, res) {
         const blog = await this.blogsQueryRepository.findBlogById(blogId);

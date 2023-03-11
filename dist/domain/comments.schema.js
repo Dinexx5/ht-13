@@ -108,8 +108,6 @@ exports.CreateCommentModel = CreateCommentModel;
 class LikeInputModel {
 }
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     (0, isLikeStatusCorrect_1.IsLikeStatusCorrect)(),
     __metadata("design:type", String)
 ], LikeInputModel.prototype, "likeStatus", void 0);

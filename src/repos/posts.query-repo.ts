@@ -33,7 +33,6 @@ function mapperToPostViewModel(post: PostDocument, myStatus?: string): PostViewM
   if (myStatus) {
     filter.myStatus = myStatus;
   }
-  console.log(post);
   return {
     id: post._id.toString(),
     title: post.title,
@@ -106,6 +105,7 @@ export class PostsQueryRepository {
     if (!foundPost) {
       return null;
     }
+    console.log(foundPost);
     return mapPostToViewModel(foundPost, userId);
   }
 }

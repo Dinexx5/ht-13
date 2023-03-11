@@ -4,12 +4,14 @@ import { createPostInputModelWithBlogId, PostDocument, PostViewModel, updatePost
 import { BlogsQueryRepository } from '../repos/blogs.query-repo';
 import { CommentViewModel, CreateCommentModel } from '../domain/comments.schema';
 import { CommentsService } from './comments.service';
+import { UsersRepository } from '../repos/users.repository';
 export declare class PostsService {
     protected postsRepository: PostsRepository;
     protected blogsQueryRepository: BlogsQueryRepository;
     protected commentsService: CommentsService;
+    protected usersRepository: UsersRepository;
     private postModel;
-    constructor(postsRepository: PostsRepository, blogsQueryRepository: BlogsQueryRepository, commentsService: CommentsService, postModel: Model<PostDocument>);
+    constructor(postsRepository: PostsRepository, blogsQueryRepository: BlogsQueryRepository, commentsService: CommentsService, usersRepository: UsersRepository, postModel: Model<PostDocument>);
     createPost(postBody: createPostInputModelWithBlogId): Promise<PostViewModel | null>;
     deletePostById(postId: string): Promise<boolean>;
     UpdatePostById(postBody: updatePostModel, postId: string): Promise<boolean>;

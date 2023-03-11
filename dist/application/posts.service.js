@@ -43,11 +43,13 @@ const mongoose_2 = __importStar(require("mongoose"));
 const posts_schema_1 = require("../domain/posts.schema");
 const blogs_query_repo_1 = require("../repos/blogs.query-repo");
 const comments_service_1 = require("./comments.service");
+const users_repository_1 = require("../repos/users.repository");
 let PostsService = class PostsService {
-    constructor(postsRepository, blogsQueryRepository, commentsService, postModel) {
+    constructor(postsRepository, blogsQueryRepository, commentsService, usersRepository, postModel) {
         this.postsRepository = postsRepository;
         this.blogsQueryRepository = blogsQueryRepository;
         this.commentsService = commentsService;
+        this.usersRepository = usersRepository;
         this.postModel = postModel;
     }
     async createPost(postBody) {
@@ -116,6 +118,8 @@ let PostsService = class PostsService {
     }
     async likePost(postId, likeStatus, userId) {
         const _id = new mongoose_2.default.Types.ObjectId(postId);
+        const userInstance = await this.usersRepository.findUserById(userId);
+        const login = userInstance.accountData.login;
         const postInstance = await this.postsRepository.findPostInstance(_id);
         if (!postInstance) {
             return false;
@@ -135,11 +139,21 @@ let PostsService = class PostsService {
                 if (myStatus === 'None') {
                     ++postInstance.extendedLikesInfo.likesCount;
                     postInstance.likingUsers[indexOfUser].myStatus = 'Like';
+                    postInstance.likes.push({
+                        addedAt: new Date().toISOString(),
+                        userId: userId.toString(),
+                        login: login,
+                    });
                 }
                 if (myStatus === 'Dislike') {
                     --postInstance.extendedLikesInfo.dislikesCount;
                     ++postInstance.extendedLikesInfo.likesCount;
                     postInstance.likingUsers[indexOfUser].myStatus = 'Like';
+                    postInstance.likes.push({
+                        addedAt: new Date().toISOString(),
+                        userId: userId.toString(),
+                        login: login,
+                    });
                 }
                 break;
             case 'Dislike':
@@ -147,6 +161,11 @@ let PostsService = class PostsService {
                     --postInstance.extendedLikesInfo.likesCount;
                     ++postInstance.extendedLikesInfo.dislikesCount;
                     postInstance.likingUsers[indexOfUser].myStatus = 'Dislike';
+                    postInstance.likes.push({
+                        addedAt: new Date().toISOString(),
+                        userId: userId.toString(),
+                        login: login,
+                    });
                 }
                 if (myStatus === 'None') {
                     ++postInstance.extendedLikesInfo.dislikesCount;
@@ -160,6 +179,11 @@ let PostsService = class PostsService {
                 if (myStatus === 'Like') {
                     --postInstance.extendedLikesInfo.likesCount;
                     postInstance.likingUsers[indexOfUser].myStatus = 'None';
+                    postInstance.likes.push({
+                        addedAt: new Date().toISOString(),
+                        userId: userId.toString(),
+                        login: login,
+                    });
                 }
                 if (myStatus === 'Dislike') {
                     --postInstance.extendedLikesInfo.dislikesCount;
@@ -176,10 +200,11 @@ let PostsService = class PostsService {
 };
 PostsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(3, (0, mongoose_1.InjectModel)(posts_schema_1.Post.name)),
+    __param(4, (0, mongoose_1.InjectModel)(posts_schema_1.Post.name)),
     __metadata("design:paramtypes", [posts_repository_1.PostsRepository,
         blogs_query_repo_1.BlogsQueryRepository,
         comments_service_1.CommentsService,
+        users_repository_1.UsersRepository,
         mongoose_2.Model])
 ], PostsService);
 exports.PostsService = PostsService;

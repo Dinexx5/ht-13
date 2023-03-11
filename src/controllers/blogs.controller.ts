@@ -80,7 +80,7 @@ export class BlogsController {
     const postDto = { ...inputModel, blogId };
     const post = await this.postsService.createPost(postDto);
     if (!post) return res.sendStatus(404);
-    return post;
+    return res.send(post);
   }
   @Get(':id/posts')
   async getPosts(@Param('id') blogId: string, @Query() paginationQuery, @Res() res: Response) {

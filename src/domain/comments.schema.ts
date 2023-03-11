@@ -58,8 +58,6 @@ export class CreateCommentModel {
   content: string;
 }
 export class LikeInputModel {
-  @IsString()
-  @IsNotEmpty()
   @IsLikeStatusCorrect()
   likeStatus: string;
 }
