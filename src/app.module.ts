@@ -28,6 +28,8 @@ import { IsBlogExistsDecorator } from './shared/decorators/isBlogExists.decorato
 import { IsLikeStatusCorrectDecorator } from './shared/decorators/isLikeStatusCorrect';
 import { AttemptsRepository } from './repos/attempts.repository';
 import { Attempt, AttemptSchema } from './domain/attempts.schema';
+import { Token, TokenSchema } from './domain/token.schema';
+import { Device, DeviceSchema } from './domain/devices.schema';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { Attempt, AttemptSchema } from './domain/attempts.schema';
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Attempt.name, schema: AttemptSchema }]),
+    MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
+    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
     UsersModule,
     AuthModule,
   ],

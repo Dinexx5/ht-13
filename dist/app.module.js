@@ -37,6 +37,8 @@ const isBlogExists_decorator_1 = require("./shared/decorators/isBlogExists.decor
 const isLikeStatusCorrect_1 = require("./shared/decorators/isLikeStatusCorrect");
 const attempts_repository_1 = require("./repos/attempts.repository");
 const attempts_schema_1 = require("./domain/attempts.schema");
+const token_schema_1 = require("./domain/token.schema");
+const devices_schema_1 = require("./domain/devices.schema");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -49,6 +51,8 @@ AppModule = __decorate([
             mongoose_1.MongooseModule.forFeature([{ name: comments_schema_1.Comment.name, schema: comments_schema_1.CommentSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: users_schema_1.User.name, schema: users_schema_1.UserSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: attempts_schema_1.Attempt.name, schema: attempts_schema_1.AttemptSchema }]),
+            mongoose_1.MongooseModule.forFeature([{ name: token_schema_1.Token.name, schema: token_schema_1.TokenSchema }]),
+            mongoose_1.MongooseModule.forFeature([{ name: devices_schema_1.Device.name, schema: devices_schema_1.DeviceSchema }]),
             users_module_1.UsersModule,
             auth_module_1.AuthModule,
         ],

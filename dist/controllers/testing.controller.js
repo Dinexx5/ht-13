@@ -20,18 +20,27 @@ const mongoose_2 = require("mongoose");
 const posts_schema_1 = require("../domain/posts.schema");
 const users_schema_1 = require("../domain/users.schema");
 const comments_schema_1 = require("../domain/comments.schema");
+const attempts_schema_1 = require("../domain/attempts.schema");
+const token_schema_1 = require("../domain/token.schema");
+const devices_schema_1 = require("../domain/devices.schema");
 let TestingController = class TestingController {
-    constructor(blogModel, postModel, userModel, commentModel) {
+    constructor(blogModel, postModel, userModel, commentModel, attemptModel, tokenModel, deviceModel) {
         this.blogModel = blogModel;
         this.postModel = postModel;
         this.userModel = userModel;
         this.commentModel = commentModel;
+        this.attemptModel = attemptModel;
+        this.tokenModel = tokenModel;
+        this.deviceModel = deviceModel;
     }
     async deleteAll(res) {
         await this.blogModel.deleteMany({});
         await this.postModel.deleteMany({});
         await this.userModel.deleteMany({});
         await this.commentModel.deleteMany({});
+        await this.attemptModel.deleteMany({});
+        await this.tokenModel.deleteMany({});
+        await this.deviceModel.deleteMany({});
         return res.sendStatus(204);
     }
 };
@@ -48,7 +57,13 @@ TestingController = __decorate([
     __param(1, (0, mongoose_1.InjectModel)(posts_schema_1.Post.name)),
     __param(2, (0, mongoose_1.InjectModel)(users_schema_1.User.name)),
     __param(3, (0, mongoose_1.InjectModel)(comments_schema_1.Comment.name)),
+    __param(4, (0, mongoose_1.InjectModel)(attempts_schema_1.Attempt.name)),
+    __param(5, (0, mongoose_1.InjectModel)(token_schema_1.Token.name)),
+    __param(6, (0, mongoose_1.InjectModel)(devices_schema_1.Device.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])

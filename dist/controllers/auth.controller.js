@@ -129,7 +129,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "deleteCurrentSession", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -138,7 +137,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerUser", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration-email-resending'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -147,7 +145,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resendEmail", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration-confirmation'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -156,7 +153,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "confirmEmail", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('password-recovery'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -165,7 +161,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "recoverPassword", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('new-password'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
