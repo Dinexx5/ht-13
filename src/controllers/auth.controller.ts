@@ -23,7 +23,7 @@ export class AuthController {
     protected usersRepository: UsersRepository,
   ) {}
 
-  @UseGuards(LocalAuthGuard, RateLimitGuard)
+  @UseGuards(RateLimitGuard, LocalAuthGuard)
   @Post('login')
   async login(@Request() req, @Res() res: Response) {
     const ip = req.ip;
@@ -32,7 +32,7 @@ export class AuthController {
     const refreshToken = await this.authService.createJwtRefreshToken(req.user, deviceName, ip);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
     res.status(200).json({ accessToken: accessToken });
   }
@@ -57,7 +57,7 @@ export class AuthController {
     const newRefreshToken = await this.authService.updateJwtRefreshToken(deviceId, exp, userId);
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
     res.status(200).json({ accessToken: newAccessToken });
   }
