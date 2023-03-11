@@ -45,6 +45,7 @@ export class PostsController {
     }
     const returnedPosts: paginatedViewModel<PostViewModel[]> =
       await this.postsQueryRepository.getAllPosts(paginationQuery, undefined, isToken.token);
+
     return returnedPosts;
   }
   @Get(':id')

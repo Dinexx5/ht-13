@@ -21,9 +21,11 @@ const posts_schema_1 = require("../domain/posts.schema");
 const posts_service_1 = require("../application/posts.service");
 const posts_query_repo_1 = require("../repos/posts.query-repo");
 const auth_guard_1 = require("../auth/guards/auth.guard");
+const auth_service_1 = require("../auth/auth-service");
 let BlogsController = class BlogsController {
-    constructor(blogsService, blogsQueryRepository, postsService, postsQueryRepository) {
+    constructor(blogsService, authService, blogsQueryRepository, postsService, postsQueryRepository) {
         this.blogsService = blogsService;
+        this.authService = authService;
         this.blogsQueryRepository = blogsQueryRepository;
         this.postsService = postsService;
         this.postsQueryRepository = postsQueryRepository;
@@ -64,11 +66,19 @@ let BlogsController = class BlogsController {
             return res.sendStatus(404);
         return res.send(post);
     }
-    async getPosts(blogId, paginationQuery, res) {
+    async getPosts(req, blogId, paginationQuery, res) {
         const blog = await this.blogsQueryRepository.findBlogById(blogId);
         if (!blog)
             return res.sendStatus(404);
-        const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
+        const isToken = { token: null };
+        if (!req.headers.authorization)
+            isToken.token = null;
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1];
+            const result = await this.authService.getTokenInfo(token);
+            isToken.token = result.userId;
+        }
+        const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery, blogId, isToken.token);
         return res.send(returnedPosts);
     }
 };
@@ -126,16 +136,18 @@ __decorate([
 ], BlogsController.prototype, "createPost", null);
 __decorate([
     (0, common_1.Get)(':id/posts'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Query)()),
-    __param(2, (0, common_1.Res)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Query)()),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [Object, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "getPosts", null);
 BlogsController = __decorate([
     (0, common_1.Controller)('blogs'),
     __metadata("design:paramtypes", [blogs_service_1.BlogsService,
+        auth_service_1.AuthService,
         blogs_query_repo_1.BlogsQueryRepository,
         posts_service_1.PostsService,
         posts_query_repo_1.PostsQueryRepository])

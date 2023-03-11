@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -19,11 +20,13 @@ import { createPostModel, PostViewModel } from '../domain/posts.schema';
 import { PostsService } from '../application/posts.service';
 import { PostsQueryRepository } from '../repos/posts.query-repo';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { AuthService } from '../auth/auth-service';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     protected blogsService: BlogsService,
+    protected authService: AuthService,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postsService: PostsService,
     protected postsQueryRepository: PostsQueryRepository,
@@ -83,11 +86,23 @@ export class BlogsController {
     return res.send(post);
   }
   @Get(':id/posts')
-  async getPosts(@Param('id') blogId: string, @Query() paginationQuery, @Res() res: Response) {
+  async getPosts(
+    @Request() req,
+    @Param('id') blogId: string,
+    @Query() paginationQuery,
+    @Res() res: Response,
+  ) {
     const blog = await this.blogsQueryRepository.findBlogById(blogId);
     if (!blog) return res.sendStatus(404);
+    const isToken = { token: null };
+    if (!req.headers.authorization) isToken.token = null;
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const result = await this.authService.getTokenInfo(token);
+      isToken.token = result.userId;
+    }
     const returnedPosts: paginatedViewModel<PostViewModel[]> =
-      await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
+      await this.postsQueryRepository.getAllPosts(paginationQuery, blogId, isToken.token);
     return res.send(returnedPosts);
   }
 }
