@@ -15,7 +15,7 @@ const transporterSettings = {
     secure: false,
     auth: {
         user: 'd.diubajlo@mail.ru',
-        pass: '',
+        pass: ' ',
     },
 };
 let EmailAdapter = class EmailAdapter {
