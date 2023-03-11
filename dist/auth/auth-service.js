@@ -50,6 +50,7 @@ const email_adapter_1 = require("../adapters/email.adapter");
 const devices_schema_1 = require("../domain/devices.schema");
 const devices_repository_1 = require("../repos/devices.repository");
 const constants_1 = require("./constants");
+const bcrypt = __importStar(require("bcrypt"));
 let AuthService = class AuthService {
     constructor(emailAdapter, usersService, jwtService, tokenRepository, devicesService, devicesRepository, tokenModel, deviceModel) {
         this.emailAdapter = emailAdapter;
@@ -61,12 +62,15 @@ let AuthService = class AuthService {
         this.tokenModel = tokenModel;
         this.deviceModel = deviceModel;
     }
-    async validateUser(username, pass) {
+    async validateUser(username, password) {
         const user = await this.usersService.findUserByLoginOrEmail(username);
-        if (user) {
-            return user._id;
+        if (!user || !user.emailConfirmation.isConfirmed) {
+            return null;
         }
-        return null;
+        const isValidPassword = await bcrypt.compare(password, user.accountData.passwordHash);
+        if (!isValidPassword)
+            return null;
+        return user._id;
     }
     async createJwtAccessToken(userId) {
         const payload = { userId: userId };

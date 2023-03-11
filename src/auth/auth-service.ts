@@ -15,6 +15,7 @@ import { Device, DeviceDocument } from '../domain/devices.schema';
 import { DevicesRepository } from '../repos/devices.repository';
 import { jwtConstants } from './constants';
 import { CreateUserModel, NewPasswordModel } from '../models/userModels';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -29,12 +30,14 @@ export class AuthService {
     @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findUserByLoginOrEmail(username);
-    if (user) {
-      return user._id;
+    if (!user || !user.emailConfirmation.isConfirmed) {
+      return null;
     }
-    return null;
+    const isValidPassword = await bcrypt.compare(password, user.accountData.passwordHash);
+    if (!isValidPassword) return null;
+    return user._id;
   }
 
   async createJwtAccessToken(userId: ObjectId) {

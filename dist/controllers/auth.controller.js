@@ -34,7 +34,7 @@ let AuthController = class AuthController {
             httpOnly: true,
             secure: false,
         });
-        res.json({ accessToken: accessToken });
+        res.status(200).json({ accessToken: accessToken });
     }
     async getProfile(req, res) {
         const userInstance = await this.usersRepository.findUserById(req.user);

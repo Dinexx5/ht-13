@@ -32,7 +32,7 @@ export class AuthController {
       httpOnly: true,
       secure: false,
     });
-    res.json({ accessToken: accessToken });
+    res.status(200).json({ accessToken: accessToken });
   }
 
   @UseGuards(JwtAuthGuard)

@@ -21,7 +21,7 @@ export declare class AuthService {
     private tokenModel;
     private deviceModel;
     constructor(emailAdapter: EmailAdapter, usersService: UsersService, jwtService: JwtService, tokenRepository: TokenRepository, devicesService: DevicesService, devicesRepository: DevicesRepository, tokenModel: Model<TokenDocument>, deviceModel: Model<DeviceDocument>);
-    validateUser(username: string, pass: string): Promise<any>;
+    validateUser(username: string, password: string): Promise<any>;
     createJwtAccessToken(userId: ObjectId): Promise<string>;
     createJwtRefreshToken(userId: mongoose.Schema.Types.ObjectId, deviceName: string, ip: string): Promise<string>;
     updateJwtRefreshToken(refreshToken: string): Promise<string>;

@@ -18,6 +18,7 @@ let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)
     constructor(authService) {
         super({
             usernameField: 'loginOrEmail',
+            passwordField: 'password',
         });
         this.authService = authService;
     }
