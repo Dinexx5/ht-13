@@ -32,7 +32,7 @@ let AuthController = class AuthController {
         const refreshToken = await this.authService.createJwtRefreshToken(req.user, deviceName, ip);
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: false,
         });
         res.status(200).json({ accessToken: accessToken });
     }
@@ -46,17 +46,22 @@ let AuthController = class AuthController {
         });
     }
     async getRefreshToken(req, res) {
-        const newAccessToken = await this.authService.createJwtAccessToken(req.user);
         const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken)
+            throw new common_1.UnauthorizedException();
+        const userId = await this.authService.getUserByRefreshToken(refreshToken);
+        const newAccessToken = await this.authService.createJwtAccessToken(userId);
         const newRefreshToken = await this.authService.updateJwtRefreshToken(refreshToken);
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: false,
         });
         res.json({ accessToken: newAccessToken });
     }
     async deleteCurrentSession(req, res) {
         const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken)
+            throw new common_1.UnauthorizedException();
         await this.authService.deleteCurrentToken(refreshToken);
         await this.authService.deleteDeviceForLogout(refreshToken);
         return res.sendStatus(204);
@@ -65,9 +70,6 @@ let AuthController = class AuthController {
         return res.sendStatus(204);
     }
     async resendEmail(inputModel, res) {
-        const isEmailResent = await this.authService.resendEmail(inputModel.email);
-        if (!isEmailResent)
-            return res.send('Can not send an email');
         return res.sendStatus(204);
     }
     async confirmEmail(inputModel, res) {
@@ -77,9 +79,6 @@ let AuthController = class AuthController {
         return res.sendStatus(204);
     }
     async recoverPassword(inputModel, res) {
-        const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
-        if (!isEmailSent)
-            return res.status(204).send('something went wrong');
         return res.sendStatus(204);
     }
     async newPassword(inputModel, res) {
@@ -108,7 +107,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getProfile", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('refresh-token'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),
@@ -117,7 +115,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getRefreshToken", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('logout'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),

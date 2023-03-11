@@ -72,23 +72,27 @@ let AuthService = class AuthService {
             return null;
         return user._id;
     }
+    async getUserByRefreshToken(token) {
+        const result = await this.jwtService.verify(token, { secret: constants_1.jwtConstants.secret });
+        const userId = new mongoose_1.default.Types.ObjectId(result.userId);
+        return userId;
+    }
     async createJwtAccessToken(userId) {
-        const payload = { userId: userId };
+        const payload = { userId: userId.toString() };
         const accessToken = this.jwtService.sign(payload, {
             secret: constants_1.jwtConstants.secret,
-            expiresIn: '10s',
+            expiresIn: '6000s',
         });
-        console.log(accessToken);
         return accessToken;
     }
     async createJwtRefreshToken(userId, deviceName, ip) {
         const deviceId = new Date().toISOString();
-        const payload = { userId: userId, deviceId: deviceId };
+        const payload = { userId: userId.toString(), deviceId: deviceId };
         const refreshToken = this.jwtService.sign(payload, {
             secret: constants_1.jwtConstants.secret,
-            expiresIn: '20s',
+            expiresIn: '6000s',
         });
-        const result = this.jwtService.verify(refreshToken, { secret: constants_1.jwtConstants.secret });
+        const result = await this.jwtService.verify(refreshToken, { secret: constants_1.jwtConstants.secret });
         const issuedAt = new Date(result.iat * 1000).toISOString();
         const expiredAt = new Date(result.exp * 1000).toISOString();
         const tokenMetaDTO = {
@@ -113,7 +117,10 @@ let AuthService = class AuthService {
         if (!tokenInstance)
             throw new common_1.UnauthorizedException();
         const newPayload = { userId: userId, deviceId: deviceId };
-        const newRefreshToken = this.jwtService.sign(newPayload);
+        const newRefreshToken = this.jwtService.sign(newPayload, {
+            secret: constants_1.jwtConstants.secret,
+            expiresIn: '6000s',
+        });
         const newResult = await this.getTokenInfo(newRefreshToken);
         const newIssuedAt = new Date(newResult.iat * 1000).toISOString();
         const newExpiredAt = new Date(newResult.exp * 1000).toISOString();
@@ -133,6 +140,8 @@ let AuthService = class AuthService {
     }
     async deleteCurrentToken(token) {
         const result = await this.getTokenInfo(token);
+        if (!result)
+            throw new common_1.UnauthorizedException();
         const expirationDate = new Date(result.exp * 1000).toISOString();
         const tokenInstance = await this.tokenRepository.findToken(expirationDate);
         if (!tokenInstance)

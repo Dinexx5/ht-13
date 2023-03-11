@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../auth/auth-service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
@@ -30,7 +39,7 @@ export class AuthController {
     const refreshToken = await this.authService.createJwtRefreshToken(req.user, deviceName, ip);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
     res.status(200).json({ accessToken: accessToken });
   }
@@ -47,23 +56,24 @@ export class AuthController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('refresh-token')
   async getRefreshToken(@Request() req, @Res() res: Response) {
-    const newAccessToken = await this.authService.createJwtAccessToken(req.user);
     const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) throw new UnauthorizedException();
+    const userId = await this.authService.getUserByRefreshToken(refreshToken);
+    const newAccessToken = await this.authService.createJwtAccessToken(userId);
     const newRefreshToken = await this.authService.updateJwtRefreshToken(refreshToken);
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
     res.json({ accessToken: newAccessToken });
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('logout')
   async deleteCurrentSession(@Request() req, @Res() res: Response) {
     const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) throw new UnauthorizedException();
     await this.authService.deleteCurrentToken(refreshToken);
     await this.authService.deleteDeviceForLogout(refreshToken);
     return res.sendStatus(204);
@@ -80,8 +90,8 @@ export class AuthController {
   @UseGuards(RateLimitGuard)
   @Post('registration-email-resending')
   async resendEmail(@Body() inputModel: ResendEmailModel, @Res() res: Response) {
-    const isEmailResent = await this.authService.resendEmail(inputModel.email);
-    if (!isEmailResent) return res.send('Can not send an email');
+    // const isEmailResent = await this.authService.resendEmail(inputModel.email);
+    // if (!isEmailResent) return res.send('Can not send an email');
     return res.sendStatus(204);
   }
 
@@ -96,8 +106,8 @@ export class AuthController {
   @UseGuards(RateLimitGuard)
   @Post('password-recovery')
   async recoverPassword(@Body() inputModel: PasswordRecoveryModel, @Res() res: Response) {
-    const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
-    if (!isEmailSent) return res.status(204).send('something went wrong');
+    // const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
+    // if (!isEmailSent) return res.status(204).send('something went wrong');
     return res.sendStatus(204);
   }
 
