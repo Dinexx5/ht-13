@@ -12,6 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentViewModel = exports.LikeInputModel = exports.CreateCommentModel = exports.CommentSchema = exports.Comment = exports.CommentatorModel = exports.LikesInfo = exports.LikingUsers = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
+const isLikeStatusCorrect_1 = require("../shared/decorators/isLikeStatusCorrect");
 let LikingUsers = class LikingUsers {
 };
 __decorate([
@@ -91,9 +94,22 @@ exports.Comment = Comment;
 exports.CommentSchema = mongoose_1.SchemaFactory.createForClass(Comment);
 class CreateCommentModel {
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(20, 300),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], CreateCommentModel.prototype, "content", void 0);
 exports.CreateCommentModel = CreateCommentModel;
 class LikeInputModel {
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, isLikeStatusCorrect_1.IsLikeStatusCorrect)(),
+    __metadata("design:type", String)
+], LikeInputModel.prototype, "likeStatus", void 0);
 exports.LikeInputModel = LikeInputModel;
 class CommentViewModel {
     constructor(id, content, commentatorInfo, createdAt, likesInfo) {

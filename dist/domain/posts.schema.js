@@ -12,6 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostViewModel = exports.updatePostModel = exports.createPostInputModelWithBlogId = exports.createPostModel = exports.PostSchema = exports.Post = exports.LikeModel = exports.ExtendedLikesInfo = exports.LikingUsers = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const class_validator_1 = require("class-validator");
+const isBlogExists_decorator_1 = require("../shared/decorators/isBlogExists.decorator");
+const class_transformer_1 = require("class-transformer");
 let LikingUsers = class LikingUsers {
 };
 __decorate([
@@ -106,30 +109,90 @@ Post = __decorate([
 exports.Post = Post;
 exports.PostSchema = mongoose_1.SchemaFactory.createForClass(Post);
 class createPostModel {
-    constructor(title, shortDescription, content) {
-        this.title = title;
-        this.shortDescription = shortDescription;
-        this.content = content;
-    }
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 30),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], createPostModel.prototype, "title", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 100),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], createPostModel.prototype, "shortDescription", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 1000),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], createPostModel.prototype, "content", void 0);
 exports.createPostModel = createPostModel;
 class createPostInputModelWithBlogId {
-    constructor(title, shortDescription, content, blogId) {
-        this.title = title;
-        this.shortDescription = shortDescription;
-        this.content = content;
-        this.blogId = blogId;
-    }
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 30),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], createPostInputModelWithBlogId.prototype, "title", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 100),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], createPostInputModelWithBlogId.prototype, "shortDescription", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 1000),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], createPostInputModelWithBlogId.prototype, "content", void 0);
+__decorate([
+    (0, isBlogExists_decorator_1.IsBlogExists)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 30),
+    __metadata("design:type", String)
+], createPostInputModelWithBlogId.prototype, "blogId", void 0);
 exports.createPostInputModelWithBlogId = createPostInputModelWithBlogId;
 class updatePostModel {
-    constructor(title, shortDescription, content, blogId) {
-        this.title = title;
-        this.shortDescription = shortDescription;
-        this.content = content;
-        this.blogId = blogId;
-    }
 }
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 30),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], updatePostModel.prototype, "title", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 100),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], updatePostModel.prototype, "shortDescription", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 1000),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
+    __metadata("design:type", String)
+], updatePostModel.prototype, "content", void 0);
+__decorate([
+    (0, isBlogExists_decorator_1.IsBlogExists)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(0, 30),
+    __metadata("design:type", String)
+], updatePostModel.prototype, "blogId", void 0);
 exports.updatePostModel = updatePostModel;
 class PostViewModel {
     constructor(id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo) {

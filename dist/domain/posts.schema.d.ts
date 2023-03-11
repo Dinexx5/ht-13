@@ -30,21 +30,18 @@ export declare class createPostModel {
     title: string;
     shortDescription: string;
     content: string;
-    constructor(title: string, shortDescription: string, content: string);
 }
 export declare class createPostInputModelWithBlogId {
     title: string;
     shortDescription: string;
     content: string;
     blogId: string;
-    constructor(title: string, shortDescription: string, content: string, blogId: string);
 }
 export declare class updatePostModel {
     title: string;
     shortDescription: string;
     content: string;
     blogId: string;
-    constructor(title: string, shortDescription: string, content: string, blogId: string);
 }
 export declare class PostViewModel {
     id: string;

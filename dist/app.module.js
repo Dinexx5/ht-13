@@ -33,19 +33,24 @@ const auth_controller_1 = require("./controllers/auth.controller");
 const comments_repository_1 = require("./repos/comments.repository");
 const comments_service_1 = require("./application/comments.service");
 const devices_controller_1 = require("./controllers/devices.controller");
+const isBlogExists_decorator_1 = require("./shared/decorators/isBlogExists.decorator");
+const isLikeStatusCorrect_1 = require("./shared/decorators/isLikeStatusCorrect");
+const attempts_repository_1 = require("./repos/attempts.repository");
+const attempts_schema_1 = require("./domain/attempts.schema");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            users_module_1.UsersModule,
-            auth_module_1.AuthModule,
-            config_1.ConfigModule.forRoot(),
+            config_1.ConfigModule.forRoot({ isGlobal: true }),
             mongoose_1.MongooseModule.forRoot(process.env.MONGO_URL),
             mongoose_1.MongooseModule.forFeature([{ name: blogs_schema_1.Blog.name, schema: blogs_schema_1.BlogSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: posts_schema_1.Post.name, schema: posts_schema_1.PostSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: comments_schema_1.Comment.name, schema: comments_schema_1.CommentSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: users_schema_1.User.name, schema: users_schema_1.UserSchema }]),
+            mongoose_1.MongooseModule.forFeature([{ name: attempts_schema_1.Attempt.name, schema: attempts_schema_1.AttemptSchema }]),
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
         ],
         controllers: [
             auth_controller_1.AuthController,
@@ -67,6 +72,9 @@ AppModule = __decorate([
             comments_query_repo_1.CommentsQueryRepository,
             comments_repository_1.CommentsRepository,
             comments_service_1.CommentsService,
+            isBlogExists_decorator_1.IsBlogExistsDecorator,
+            isLikeStatusCorrect_1.IsLikeStatusCorrectDecorator,
+            attempts_repository_1.AttemptsRepository,
         ],
     })
 ], AppModule);

@@ -68,8 +68,7 @@ export class PostsController {
   @UseGuards(AuthGuard)
   @Post()
   async createPost(@Body() inputModel: createPostInputModelWithBlogId) {
-    const createdInstance = await this.postsService.createPost(inputModel);
-    return createdInstance;
+    return await this.postsService.createPost(inputModel);
   }
   @UseGuards(AuthGuard)
   @Put(':id')

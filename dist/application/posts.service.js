@@ -29,6 +29,8 @@ let PostsService = class PostsService {
     }
     async createPost(postBody) {
         const foundBlog = await this.blogsQueryRepository.findBlogById(postBody.blogId);
+        if (!foundBlog)
+            return null;
         const postDTO = {
             _id: new mongoose_2.default.Types.ObjectId(),
             title: postBody.title,

@@ -4,14 +4,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { Response } from 'express';
 import { UsersRepository } from '../repos/users.repository';
+import { UserDocument } from '../domain/users.schema';
 import {
-  confirmEmailModel,
-  createUserModel,
-  newPasswordModel,
-  passwordRecoveryModel,
-  resendEmailModel,
-  UserDocument,
-} from '../domain/users.schema';
+  ConfirmEmailModel,
+  CreateUserModel,
+  NewPasswordModel,
+  PasswordRecoveryModel,
+  ResendEmailModel,
+} from '../models/userModels';
+import { RateLimitGuard } from '../auth/guards/rate-limit.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,7 +21,7 @@ export class AuthController {
     protected usersRepository: UsersRepository,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(LocalAuthGuard, RateLimitGuard)
   @Post('login')
   async login(@Request() req, @Res() res: Response) {
     const ip = req.ip;
@@ -68,36 +69,41 @@ export class AuthController {
     return res.sendStatus(204);
   }
 
+  // @UseGuards(RateLimitGuard)
   @Post('registration')
-  async registerUser(@Body() inputModel: createUserModel, @Res() res: Response) {
+  async registerUser(@Body() inputModel: CreateUserModel, @Res() res: Response) {
     const createdAccount = await this.authService.createUser(inputModel);
     if (!createdAccount) return res.send('can not send email. try later');
     return res.sendStatus(204);
   }
 
+  // @UseGuards(RateLimitGuard)
   @Post('registration-email-resending')
-  async resendEmail(@Body() inputModel: resendEmailModel, @Res() res: Response) {
+  async resendEmail(@Body() inputModel: ResendEmailModel, @Res() res: Response) {
     const isEmailResent = await this.authService.resendEmail(inputModel.email);
-    if (!isEmailResent) return res.send('can not send email. try later');
+    if (!isEmailResent) return res.send('Can not send an email');
     return res.sendStatus(204);
   }
 
+  // @UseGuards(RateLimitGuard)
   @Post('registration-confirmation')
-  async confirmEmail(@Body() inputModel: confirmEmailModel, @Res() res: Response) {
+  async confirmEmail(@Body() inputModel: ConfirmEmailModel, @Res() res: Response) {
     const isConfirmed = await this.authService.confirmEmail(inputModel.code);
     if (!isConfirmed) return res.sendStatus(400);
     return res.sendStatus(204);
   }
 
+  // @UseGuards(RateLimitGuard)
   @Post('password-recovery')
-  async recoverPassword(@Body() inputModel: passwordRecoveryModel, @Res() res: Response) {
+  async recoverPassword(@Body() inputModel: PasswordRecoveryModel, @Res() res: Response) {
     const isEmailSent = await this.authService.sendEmailForPasswordRecovery(inputModel.email);
     if (!isEmailSent) return res.status(204).send('something went wrong');
     return res.sendStatus(204);
   }
 
+  // @UseGuards(RateLimitGuard)
   @Post('new-password')
-  async newPassword(@Body() inputModel: newPasswordModel, @Res() res: Response) {
+  async newPassword(@Body() inputModel: NewPasswordModel, @Res() res: Response) {
     const isPasswordUpdated = await this.authService.updatePassword(inputModel);
     if (!isPasswordUpdated) return res.send('something went wrong');
     return res.sendStatus(204);

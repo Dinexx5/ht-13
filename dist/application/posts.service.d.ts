@@ -10,7 +10,7 @@ export declare class PostsService {
     protected commentsService: CommentsService;
     private postModel;
     constructor(postsRepository: PostsRepository, blogsQueryRepository: BlogsQueryRepository, commentsService: CommentsService, postModel: Model<PostDocument>);
-    createPost(postBody: createPostInputModelWithBlogId): Promise<PostViewModel>;
+    createPost(postBody: createPostInputModelWithBlogId): Promise<PostViewModel | null>;
     deletePostById(postId: string): Promise<boolean>;
     UpdatePostById(postBody: updatePostModel, postId: string): Promise<boolean>;
     createComment(postId: string, inputModel: CreateCommentModel, userId: mongoose.Types.ObjectId): Promise<CommentViewModel | null>;

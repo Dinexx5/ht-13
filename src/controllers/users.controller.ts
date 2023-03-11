@@ -2,10 +2,11 @@ import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } fro
 
 import { paginatedViewModel } from '../models/pagination';
 import { Response } from 'express';
-import { createUserModel, userViewModel } from '../domain/users.schema';
+import { userViewModel } from '../domain/users.schema';
 import { UsersService } from '../application/users.service';
 import { UsersQueryRepository } from '../repos/users.query-repo';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { CreateUserModel } from '../models/userModels';
 
 @Controller('users')
 export class UsersController {
@@ -22,7 +23,7 @@ export class UsersController {
   }
   @UseGuards(AuthGuard)
   @Post()
-  async createUser(@Body() inputModel: createUserModel) {
+  async createUser(@Body() inputModel: CreateUserModel) {
     const createdInstance: userViewModel = await this.usersService.createUser(inputModel);
     return createdInstance;
   }

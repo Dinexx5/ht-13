@@ -8,13 +8,13 @@ import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { TokenRepository } from '../repos/token.repository';
 import { DevicesService } from '../application/devices.service';
-import { createUserModel, newPasswordModel } from '../domain/users.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { EmailAdapter } from '../adapters/email.adapter';
 import { Device, DeviceDocument } from '../domain/devices.schema';
 import { DevicesRepository } from '../repos/devices.repository';
 import { jwtConstants } from './constants';
+import { CreateUserModel, NewPasswordModel } from '../models/userModels';
 
 @Injectable()
 export class AuthService {
@@ -117,7 +117,7 @@ export class AuthService {
     const result = await this.getTokenInfo(refreshToken);
     await this.devicesRepository.deleteAllSessionsWithoutActive(result.deviceId, userId);
   }
-  async createUser(inputModel: createUserModel) {
+  async createUser(inputModel: CreateUserModel) {
     const passwordHash = await this.usersService.generateHash(inputModel.password);
     const userDTO = {
       _id: new mongoose.Types.ObjectId(),
@@ -180,7 +180,7 @@ export class AuthService {
     }
     return true;
   }
-  async updatePassword(inputModel: newPasswordModel): Promise<boolean> {
+  async updatePassword(inputModel: NewPasswordModel): Promise<boolean> {
     const isUpdated = await this.usersService.updatePassword(inputModel);
     if (!isUpdated) return false;
     return true;

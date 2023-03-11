@@ -13,6 +13,7 @@ exports.blogViewModel = exports.updateBlogModel = exports.createBlogModel = expo
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 let Blog = class Blog {
 };
 __decorate([
@@ -47,14 +48,21 @@ exports.BlogSchema = mongoose_1.SchemaFactory.createForClass(Blog);
 class createBlogModel {
 }
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Length)(0, 15),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
     __metadata("design:type", String)
 ], createBlogModel.prototype, "name", void 0);
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Length)(0, 500),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
     __metadata("design:type", String)
 ], createBlogModel.prototype, "description", void 0);
 __decorate([
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsUrl)(),
     __metadata("design:type", String)
 ], createBlogModel.prototype, "websiteUrl", void 0);
@@ -62,14 +70,21 @@ exports.createBlogModel = createBlogModel;
 class updateBlogModel {
 }
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Length)(0, 15),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
     __metadata("design:type", String)
 ], updateBlogModel.prototype, "name", void 0);
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Length)(0, 500),
+    (0, class_transformer_1.Transform)(({ value }) => { var _a; return (_a = value === null || value === void 0 ? void 0 : value.trim) === null || _a === void 0 ? void 0 : _a.call(value); }),
     __metadata("design:type", String)
 ], updateBlogModel.prototype, "description", void 0);
 __decorate([
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsUrl)(),
     __metadata("design:type", String)
 ], updateBlogModel.prototype, "websiteUrl", void 0);

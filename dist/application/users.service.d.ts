@@ -1,11 +1,12 @@
 import mongoose, { Model } from 'mongoose';
-import { createUserModel, newPasswordModel, User, UserDocument, userViewModel } from '../domain/users.schema';
+import { User, UserDocument, userViewModel } from '../domain/users.schema';
 import { UsersRepository } from '../repos/users.repository';
+import { CreateUserModel, NewPasswordModel } from '../models/userModels';
 export declare class UsersService {
     protected usersRepository: UsersRepository;
     private userModel;
     constructor(usersRepository: UsersRepository, userModel: Model<UserDocument>);
-    createUser(inputModel: createUserModel): Promise<userViewModel>;
+    createUser(inputModel: CreateUserModel): Promise<userViewModel>;
     deleteUserById(userId: string): Promise<boolean>;
     findUserByLoginOrEmail(login: string): Promise<UserDocument | null>;
     generateHash(password: string): Promise<string>;
@@ -15,5 +16,5 @@ export declare class UsersService {
     updateCode(email: string, code: string): Promise<boolean>;
     updateConfirmation(code: string): Promise<boolean>;
     updateRecoveryCode(email: string, confirmationCode: string): Promise<boolean>;
-    updatePassword(inputModel: newPasswordModel): Promise<boolean>;
+    updatePassword(inputModel: NewPasswordModel): Promise<boolean>;
 }

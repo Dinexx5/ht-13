@@ -7,7 +7,7 @@ const transporterSettings = {
   secure: false,
   auth: {
     user: 'd.diubajlo@mail.ru',
-    pass: '',
+    pass: 'CtCW2fLaeDhGCRktx2b8',
   },
 };
 
@@ -15,7 +15,6 @@ const transporterSettings = {
 export class EmailAdapter {
   async sendEmailForConfirmation(email: string, code: string) {
     const transporter = nodemailer.createTransport(transporterSettings);
-
     return await transporter.sendMail({
       from: 'd.diubajlo@mail.ru',
       to: email,

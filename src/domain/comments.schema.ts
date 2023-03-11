@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsLikeStatusCorrect } from '../shared/decorators/isLikeStatusCorrect';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
@@ -48,9 +51,16 @@ export class Comment {
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
 export class CreateCommentModel {
+  @IsString()
+  @IsNotEmpty()
+  @Length(20, 300)
+  @Transform(({ value }) => value?.trim?.())
   content: string;
 }
 export class LikeInputModel {
+  @IsString()
+  @IsNotEmpty()
+  @IsLikeStatusCorrect()
   likeStatus: string;
 }
 

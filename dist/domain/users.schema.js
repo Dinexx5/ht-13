@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authModel = exports.userViewModel = exports.newPasswordModel = exports.passwordRecoveryModel = exports.confirmEmailModel = exports.resendEmailModel = exports.createUserModel = exports.UserSchema = exports.User = exports.accountDataSchema = exports.passwordRecoverySchema = exports.emailConfirmationSchema = void 0;
+exports.userViewModel = exports.UserSchema = exports.User = exports.accountDataSchema = exports.passwordRecoverySchema = exports.emailConfirmationSchema = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let emailConfirmationSchema = class emailConfirmationSchema {
@@ -93,21 +93,6 @@ User = __decorate([
 ], User);
 exports.User = User;
 exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
-class createUserModel {
-}
-exports.createUserModel = createUserModel;
-class resendEmailModel {
-}
-exports.resendEmailModel = resendEmailModel;
-class confirmEmailModel {
-}
-exports.confirmEmailModel = confirmEmailModel;
-class passwordRecoveryModel {
-}
-exports.passwordRecoveryModel = passwordRecoveryModel;
-class newPasswordModel {
-}
-exports.newPasswordModel = newPasswordModel;
 class userViewModel {
     constructor(id, login, email, createdAt) {
         this.id = id;
@@ -117,7 +102,4 @@ class userViewModel {
     }
 }
 exports.userViewModel = userViewModel;
-class authModel {
-}
-exports.authModel = authModel;
 //# sourceMappingURL=users.schema.js.map

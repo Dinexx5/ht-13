@@ -1,5 +1,5 @@
 import { PostsRepository } from '../repos/posts.repository';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import {
@@ -22,8 +22,9 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
   ) {}
 
-  async createPost(postBody: createPostInputModelWithBlogId): Promise<PostViewModel> {
+  async createPost(postBody: createPostInputModelWithBlogId): Promise<PostViewModel | null> {
     const foundBlog = await this.blogsQueryRepository.findBlogById(postBody.blogId);
+    if (!foundBlog) return null;
     const postDTO = {
       _id: new mongoose.Types.ObjectId(),
       title: postBody.title,

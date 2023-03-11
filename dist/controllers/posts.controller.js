@@ -57,8 +57,7 @@ let PostsController = class PostsController {
         return res.send(post);
     }
     async createPost(inputModel) {
-        const createdInstance = await this.postsService.createPost(inputModel);
-        return createdInstance;
+        return await this.postsService.createPost(inputModel);
     }
     async updatePost(inputModel, id, res) {
         const isUpdated = await this.postsService.UpdatePostById(inputModel, id);

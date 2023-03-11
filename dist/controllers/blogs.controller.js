@@ -58,19 +58,16 @@ let BlogsController = class BlogsController {
         return res.sendStatus(204);
     }
     async createPost(inputModel, blogId, res) {
-        const blog = await this.blogsQueryRepository.findBlogById(blogId);
-        if (!blog) {
-            return res.sendStatus(404);
-        }
         const postDto = Object.assign(Object.assign({}, inputModel), { blogId });
-        const createdInstance = await this.postsService.createPost(postDto);
-        return res.send(createdInstance);
+        const post = await this.postsService.createPost(postDto);
+        if (!post)
+            return res.sendStatus(404);
+        return post;
     }
     async getPosts(blogId, paginationQuery, res) {
         const blog = await this.blogsQueryRepository.findBlogById(blogId);
-        if (!blog) {
+        if (!blog)
             return res.sendStatus(404);
-        }
         const returnedPosts = await this.postsQueryRepository.getAllPosts(paginationQuery, blogId);
         return res.send(returnedPosts);
     }

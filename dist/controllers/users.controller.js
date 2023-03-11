@@ -14,10 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
-const users_schema_1 = require("../domain/users.schema");
 const users_service_1 = require("../application/users.service");
 const users_query_repo_1 = require("../repos/users.query-repo");
 const auth_guard_1 = require("../auth/guards/auth.guard");
+const userModels_1 = require("../models/userModels");
 let UsersController = class UsersController {
     constructor(usersService, usersQueryRepository) {
         this.usersService = usersService;
@@ -52,7 +52,7 @@ __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.createUserModel]),
+    __metadata("design:paramtypes", [userModels_1.CreateUserModel]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUser", null);
 __decorate([

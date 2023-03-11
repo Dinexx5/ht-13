@@ -18,7 +18,8 @@ const auth_service_1 = require("../auth/auth-service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const local_auth_guard_1 = require("../auth/guards/local-auth.guard");
 const users_repository_1 = require("../repos/users.repository");
-const users_schema_1 = require("../domain/users.schema");
+const userModels_1 = require("../models/userModels");
+const rate_limit_guard_1 = require("../auth/guards/rate-limit.guard");
 let AuthController = class AuthController {
     constructor(authService, usersRepository) {
         this.authService = authService;
@@ -69,7 +70,7 @@ let AuthController = class AuthController {
     async resendEmail(inputModel, res) {
         const isEmailResent = await this.authService.resendEmail(inputModel.email);
         if (!isEmailResent)
-            return res.send('can not send email. try later');
+            return res.send('Can not send an email');
         return res.sendStatus(204);
     }
     async confirmEmail(inputModel, res) {
@@ -92,7 +93,7 @@ let AuthController = class AuthController {
     }
 };
 __decorate([
-    (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
+    (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard, rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),
@@ -128,43 +129,48 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "deleteCurrentSession", null);
 __decorate([
+    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.createUserModel, Object]),
+    __metadata("design:paramtypes", [userModels_1.CreateUserModel, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerUser", null);
 __decorate([
+    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration-email-resending'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.resendEmailModel, Object]),
+    __metadata("design:paramtypes", [userModels_1.ResendEmailModel, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resendEmail", null);
 __decorate([
+    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration-confirmation'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.confirmEmailModel, Object]),
+    __metadata("design:paramtypes", [userModels_1.ConfirmEmailModel, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "confirmEmail", null);
 __decorate([
+    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('password-recovery'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.passwordRecoveryModel, Object]),
+    __metadata("design:paramtypes", [userModels_1.PasswordRecoveryModel, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "recoverPassword", null);
 __decorate([
+    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('new-password'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.newPasswordModel, Object]),
+    __metadata("design:paramtypes", [userModels_1.NewPasswordModel, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "newPassword", null);
 AuthController = __decorate([

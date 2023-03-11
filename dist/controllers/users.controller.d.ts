@@ -1,13 +1,14 @@
 import { paginatedViewModel } from '../models/pagination';
 import { Response } from 'express';
-import { createUserModel, userViewModel } from '../domain/users.schema';
+import { userViewModel } from '../domain/users.schema';
 import { UsersService } from '../application/users.service';
 import { UsersQueryRepository } from '../repos/users.query-repo';
+import { CreateUserModel } from '../models/userModels';
 export declare class UsersController {
     protected usersService: UsersService;
     protected usersQueryRepository: UsersQueryRepository;
     constructor(usersService: UsersService, usersQueryRepository: UsersQueryRepository);
     getUsers(paginationQuery: any): Promise<paginatedViewModel<userViewModel[]>>;
-    createUser(inputModel: createUserModel): Promise<userViewModel>;
+    createUser(inputModel: CreateUserModel): Promise<userViewModel>;
     deleteUser(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
 }

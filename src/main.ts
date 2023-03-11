@@ -3,16 +3,19 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exceptions.filter';
 import * as cookieParser from 'cookie-parser';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.enableCors({});
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalPipes(
     new ValidationPipe({
-      stopAtFirstError: false,
+      stopAtFirstError: true,
       exceptionFactory: (errors) => {
         const errorsForResponse = [];
+        console.log(errors);
         errors.forEach((e) => {
           const keys = Object.keys(e.constraints);
           keys.forEach((key) => {

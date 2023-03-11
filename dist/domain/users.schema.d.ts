@@ -23,32 +23,10 @@ export declare class User {
     passwordRecovery: passwordRecoverySchema;
 }
 export declare const UserSchema: mongoose.Schema<User, mongoose.Model<User, any, any, any, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, User>;
-export declare class createUserModel {
-    login: string;
-    email: string;
-    password: string;
-}
-export declare class resendEmailModel {
-    email: string;
-}
-export declare class confirmEmailModel {
-    code: string;
-}
-export declare class passwordRecoveryModel {
-    email: string;
-}
-export declare class newPasswordModel {
-    newPassword: string;
-    recoveryCode: string;
-}
 export declare class userViewModel {
     id: string;
     login: string;
     email: string;
     createdAt: string;
     constructor(id: string, login: string, email: string, createdAt: string);
-}
-export declare class authModel {
-    loginOrEmail: string;
-    password: string;
 }

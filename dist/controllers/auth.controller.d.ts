@@ -1,7 +1,7 @@
 import { AuthService } from '../auth/auth-service';
 import { Response } from 'express';
 import { UsersRepository } from '../repos/users.repository';
-import { confirmEmailModel, createUserModel, newPasswordModel, passwordRecoveryModel, resendEmailModel } from '../domain/users.schema';
+import { ConfirmEmailModel, CreateUserModel, NewPasswordModel, PasswordRecoveryModel, ResendEmailModel } from '../models/userModels';
 export declare class AuthController {
     private readonly authService;
     protected usersRepository: UsersRepository;
@@ -10,9 +10,9 @@ export declare class AuthController {
     getProfile(req: any, res: Response): Promise<void>;
     getRefreshToken(req: any, res: Response): Promise<void>;
     deleteCurrentSession(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
-    registerUser(inputModel: createUserModel, res: Response): Promise<Response<any, Record<string, any>>>;
-    resendEmail(inputModel: resendEmailModel, res: Response): Promise<Response<any, Record<string, any>>>;
-    confirmEmail(inputModel: confirmEmailModel, res: Response): Promise<Response<any, Record<string, any>>>;
-    recoverPassword(inputModel: passwordRecoveryModel, res: Response): Promise<Response<any, Record<string, any>>>;
-    newPassword(inputModel: newPasswordModel, res: Response): Promise<Response<any, Record<string, any>>>;
+    registerUser(inputModel: CreateUserModel, res: Response): Promise<Response<any, Record<string, any>>>;
+    resendEmail(inputModel: ResendEmailModel, res: Response): Promise<Response<any, Record<string, any>>>;
+    confirmEmail(inputModel: ConfirmEmailModel, res: Response): Promise<Response<any, Record<string, any>>>;
+    recoverPassword(inputModel: PasswordRecoveryModel, res: Response): Promise<Response<any, Record<string, any>>>;
+    newPassword(inputModel: NewPasswordModel, res: Response): Promise<Response<any, Record<string, any>>>;
 }

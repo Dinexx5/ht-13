@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import {
-  createUserModel,
-  newPasswordModel,
-  User,
-  UserDocument,
-  userViewModel,
-} from '../domain/users.schema';
+import { User, UserDocument, userViewModel } from '../domain/users.schema';
 import { UsersRepository } from '../repos/users.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import * as bcrypt from 'bcrypt';
+import { CreateUserModel, NewPasswordModel } from '../models/userModels';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +15,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
-  async createUser(inputModel: createUserModel): Promise<userViewModel> {
+  async createUser(inputModel: CreateUserModel): Promise<userViewModel> {
     const passwordHash = await this.generateHash(inputModel.password);
     const userDTO = {
       _id: new mongoose.Types.ObjectId(),
@@ -94,7 +89,7 @@ export class UsersService {
     await this.usersRepository.save(userInstance);
     return true;
   }
-  async updatePassword(inputModel: newPasswordModel): Promise<boolean> {
+  async updatePassword(inputModel: NewPasswordModel): Promise<boolean> {
     const userInstance = await this.usersRepository.findUserByRecoveryCode(inputModel.recoveryCode);
     if (!userInstance) return false;
     const newPasswordHash = await this.generateHash(inputModel.newPassword);

@@ -24,17 +24,22 @@ import { AuthController } from './controllers/auth.controller';
 import { CommentsRepository } from './repos/comments.repository';
 import { CommentsService } from './application/comments.service';
 import { DevicesController } from './controllers/devices.controller';
+import { IsBlogExistsDecorator } from './shared/decorators/isBlogExists.decorator';
+import { IsLikeStatusCorrectDecorator } from './shared/decorators/isLikeStatusCorrect';
+import { AttemptsRepository } from './repos/attempts.repository';
+import { Attempt, AttemptSchema } from './domain/attempts.schema';
 
 @Module({
   imports: [
-    UsersModule,
-    AuthModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGO_URL),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Attempt.name, schema: AttemptSchema }]),
+    UsersModule,
+    AuthModule,
   ],
   controllers: [
     AuthController,
@@ -56,6 +61,9 @@ import { DevicesController } from './controllers/devices.controller';
     CommentsQueryRepository,
     CommentsRepository,
     CommentsService,
+    IsBlogExistsDecorator,
+    IsLikeStatusCorrectDecorator,
+    AttemptsRepository,
   ],
 })
 export class AppModule {}

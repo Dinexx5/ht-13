@@ -7,10 +7,10 @@ import { TokenDocument } from '../domain/token.schema';
 import mongoose, { Model } from 'mongoose';
 import { TokenRepository } from '../repos/token.repository';
 import { DevicesService } from '../application/devices.service';
-import { createUserModel, newPasswordModel } from '../domain/users.schema';
 import { EmailAdapter } from '../adapters/email.adapter';
 import { DeviceDocument } from '../domain/devices.schema';
 import { DevicesRepository } from '../repos/devices.repository';
+import { CreateUserModel, NewPasswordModel } from '../models/userModels';
 export declare class AuthService {
     private readonly emailAdapter;
     private readonly usersService;
@@ -29,11 +29,11 @@ export declare class AuthService {
     deleteCurrentToken(token: string): Promise<void>;
     deleteDeviceForLogout(token: string): Promise<void>;
     deleteAllSessionsWithoutActive(refreshToken: string, userId: mongoose.Types.ObjectId): Promise<void>;
-    createUser(inputModel: createUserModel): Promise<mongoose.Document<unknown, any, import("../domain/users.schema").User> & Omit<import("../domain/users.schema").User & Required<{
+    createUser(inputModel: CreateUserModel): Promise<mongoose.Document<unknown, any, import("../domain/users.schema").User> & Omit<import("../domain/users.schema").User & Required<{
         _id: mongoose.Schema.Types.ObjectId;
     }>, never>>;
     resendEmail(email: string): Promise<boolean>;
     confirmEmail(code: string): Promise<boolean>;
     sendEmailForPasswordRecovery(email: string): Promise<boolean>;
-    updatePassword(inputModel: newPasswordModel): Promise<boolean>;
+    updatePassword(inputModel: NewPasswordModel): Promise<boolean>;
 }

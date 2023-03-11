@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsBlogExists } from '../shared/decorators/isBlogExists.decorator';
+import { Transform } from 'class-transformer';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -56,25 +59,67 @@ export class Post {
 export const PostSchema = SchemaFactory.createForClass(Post);
 
 export class createPostModel {
-  constructor(public title: string, public shortDescription: string, public content: string) {}
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 30)
+  @Transform(({ value }) => value?.trim?.())
+  title: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 100)
+  @Transform(({ value }) => value?.trim?.())
+  shortDescription: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 1000)
+  @Transform(({ value }) => value?.trim?.())
+  content: string;
 }
 
 export class createPostInputModelWithBlogId {
-  constructor(
-    public title: string,
-    public shortDescription: string,
-    public content: string,
-    public blogId: string,
-  ) {}
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 30)
+  @Transform(({ value }) => value?.trim?.())
+  title: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 100)
+  @Transform(({ value }) => value?.trim?.())
+  shortDescription: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 1000)
+  @Transform(({ value }) => value?.trim?.())
+  content: string;
+  @IsBlogExists()
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 30)
+  blogId: string;
 }
 
 export class updatePostModel {
-  constructor(
-    public title: string,
-    public shortDescription: string,
-    public content: string,
-    public blogId: string,
-  ) {}
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 30)
+  @Transform(({ value }) => value?.trim?.())
+  title: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 100)
+  @Transform(({ value }) => value?.trim?.())
+  shortDescription: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 1000)
+  @Transform(({ value }) => value?.trim?.())
+  content: string;
+  @IsBlogExists()
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 30)
+  blogId: string;
 }
 
 export class PostViewModel {

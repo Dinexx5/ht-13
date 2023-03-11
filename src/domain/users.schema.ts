@@ -51,25 +51,6 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-export class createUserModel {
-  login: string;
-  email: string;
-  password: string;
-}
-export class resendEmailModel {
-  email: string;
-}
-export class confirmEmailModel {
-  code: string;
-}
-export class passwordRecoveryModel {
-  email: string;
-}
-export class newPasswordModel {
-  newPassword: string;
-  recoveryCode: string;
-}
-
 export class userViewModel {
   constructor(
     public id: string,
@@ -77,9 +58,4 @@ export class userViewModel {
     public email: string,
     public createdAt: string,
   ) {}
-}
-
-export class authModel {
-  loginOrEmail: string;
-  password: string;
 }
