@@ -76,7 +76,7 @@ let AuthService = class AuthService {
         const payload = { userId: userId };
         const accessToken = this.jwtService.sign(payload, {
             secret: constants_1.jwtConstants.secret,
-            expiresIn: '6000s',
+            expiresIn: '10s',
         });
         console.log(accessToken);
         return accessToken;
@@ -86,7 +86,7 @@ let AuthService = class AuthService {
         const payload = { userId: userId, deviceId: deviceId };
         const refreshToken = this.jwtService.sign(payload, {
             secret: constants_1.jwtConstants.secret,
-            expiresIn: '6000s',
+            expiresIn: '20s',
         });
         const result = this.jwtService.verify(refreshToken, { secret: constants_1.jwtConstants.secret });
         const issuedAt = new Date(result.iat * 1000).toISOString();
