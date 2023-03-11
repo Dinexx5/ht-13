@@ -8,10 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostViewModel = exports.updatePostModel = exports.createPostInputModelWithBlogId = exports.createPostModel = exports.PostSchema = exports.Post = exports.LikeModel = exports.ExtendedLikesInfo = exports.LikingUsers = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
+const mongoose_2 = __importDefault(require("mongoose"));
 const class_validator_1 = require("class-validator");
 const isBlogExists_decorator_1 = require("../shared/decorators/isBlogExists.decorator");
 const class_transformer_1 = require("class-transformer");
