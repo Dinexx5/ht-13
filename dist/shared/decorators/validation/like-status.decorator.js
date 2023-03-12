@@ -39,4 +39,4 @@ function IsLikeStatusCorrect(validationOptions) {
     };
 }
 exports.IsLikeStatusCorrect = IsLikeStatusCorrect;
-//# sourceMappingURL=isLikeStatusCorrect.js.map
+//# sourceMappingURL=like-status.decorator.js.map
